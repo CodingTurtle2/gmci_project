@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-<link rel="stylesheet" href="./basic.css">
+<link rel="stylesheet" href="../lib/basic.css">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
@@ -9,11 +9,19 @@
 <overlay onclose="alert('hello');" id="overlay1">test</overlay>
 
 <div class="header_bar_1">
-<div>test1</div><div>test2</div><div>test3</div>
+	<div>
+		test1
+	</div>
+	<div>
+		test2
+	</div>
+	<div>
+		<button class="profile"></button>
+	</div>
 </div>
 <div class="header_bar_1_placeholder"></div>
 
-<span>
+<content>
 test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>
 test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>
 test<br>test<br>test<br>test<br>test<br>test<br>test<br>test
@@ -22,15 +30,28 @@ test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>
 test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>
 test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>
 test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>
-</span>
+</content>
 
-
-<script src="./basic.js"></script>
+<script src="../auth.js"></script>
+<script src="../lib/basic.js"></script>
 <script>
 
 showOverlay("overlay1");
 
 //setTimeout(() => hideOverlay("overlay1"), 3000);
+
+async function main() {
+	const couchDB = new CouchDB();
+	await couchDB.set("login", {
+		"username": "bla",
+		"password": "bla"
+	});
+
+	const data = await couchDB.get("login");
+	console.log(JSON.stringify(data));
+	//Gibt { "username": "bla", "password": "bla" } wieder
+}
+main();
 
 </script>
 

@@ -27,6 +27,22 @@ body, html {
 	background-color: var(--accent_color_fg);
 	color: black;
 }
+selectable {
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
+}
+
+/* ----------- elements ----------- */
+
+.profile {
+	width: 58px;
+	height: 58px;
+	border-radius: 50%;
+	background: var(--accent_color_bg);
+	border: none;
+}
 
 /* ----------- overlay ----------- */
 
@@ -75,6 +91,8 @@ overlay {
 	background: var(--accent_color_bg);
 	border-radius: var(--border-radius);
 	border: none;
+	font-size: 20px;
+	font-weight: 600;
 }
 
 /* ----------- headerbar ----------- */
@@ -89,7 +107,7 @@ overlay {
 	backdrop-filter: blur(10px);
 	padding: 15px;
 	box-shadow: var(--def-shadow);
-	height: 70px;
+	height: 75px;
 	align-items: center;
 	display: flex;
 	flex-direction: row;
@@ -109,7 +127,7 @@ overlay {
 }
 
 .header_bar_1_placeholder {
-	height: 70px;
+	height: 75px;
 }
 .header_bar_1_undocked {
 	width: 96%;
@@ -121,6 +139,12 @@ overlay {
 	width: 100%;
 	animation: header_bar_1_docked_ani 0.5s ease-in-out;
 }
+
+content {
+	display: block;
+	padding: 15px;
+}
+
 @keyframes header_bar_1_undocked_ani {
 	from {
 		width: 100%;
