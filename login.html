@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Login</title>
+<link rel="stylesheet" href="./lib/basic.css">
+<script src="./auth.js"></script>
+<script src="./lib/basic.js"></script>
+</head>
+<body>
+	
+<input id="username"><br>
+<input type="password" id="password">
+
+<button onclick="login()">Submit</button>
+	
+<script>
+
+const couchDB = new CouchDB();
+
+async function getData() {
+	let res = await couchDB.get("users");
+	if (!res) res = {};
+	return res;
+}
+
+async function login() {
+	const data = await getData();
+	const username = getId("username").value;
+	const password = getId("password").value;
+	
+	const user = data[username];
+	//{"turtle":{"password": "password","level":1}}
+	if (user == undefined) {
+		alert("Falscher Nutzername!");
+		return;
+	}
+	if (user.password != password) {
+		alert("Falsches Passwort!");
+		return;
+	}
+	
+	location.href = "/uebersicht.html";
+}
+
+couchDB.set("users", {
+	turtle: {
+		password: "password",
+		level: 1,
+		isProf: true
+	}
+});
+
+</script>
+	
+</body>
+</html>
