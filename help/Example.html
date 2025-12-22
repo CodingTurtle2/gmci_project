@@ -48,9 +48,9 @@ async function main() {
 		"more_data": "bla"
 	});
 
-	const data = await couchDB.get("login");
+	const data = await couchDB.get("xample");
 	console.log(JSON.stringify(data));
-	//Gibt { "username": "bla", "password": "bla" } wieder
+	//Gibt { "my_data": 1, "more_data": "bla" } wieder
 }
 
 main();

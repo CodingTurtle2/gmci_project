@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="../lib/basic.css">
+<script src="../auth.js"></script>
+<script src="../lib/basic.js"></script>
+<script>
+const couchDB = new CouchDB();
+setUserData(couchDB);
+</script>
+</head>
+<body>
+<style>
+</style>
+
+<div class="header_bar_1">
+	<div onclick="location.href = './uebersicht.html?user=' + userData.name;">
+		<div style="border-radius: 50%; border: 1px solid black; display: inline-block; text-align: center; width: 32px; font-size: 25px;">⇦</div>
+		&nbsp;&nbsp;Meine Kurse
+	</div>
+	<div><b>Auswertungen</b></div>
+	<div>
+		<button class="profile"></button>
+	</div>
+</div>
+<div class="header_bar_1_placeholder"></div>
+
+<script>
+</script>
+</body>
+</html>
