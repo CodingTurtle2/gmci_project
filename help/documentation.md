@@ -7,11 +7,15 @@
 ##Overlays
 
 ```
-//Erstelle ein element mit <overlay></overla> in html und vergebe eine id. Um das overlay anzuzeigen, rufe showOverlay mit der id auf
-function showOverlay(string id);
+//Erstelle ein element mit <overlay></overlay> in html und vergebe eine id. Um das overlay anzuzeigen, rufe showOverlay mit der id auf
+function showOverlay(string id) -> void;
 
 //Schließe das overlay mit der id
-function hideOverlay(string id);
+function hideOverlay(string id) -> void;
+
+//Rufe das overlay auf
+function getOverlay(string id) -> div;
+
 ```
 
 ##CouchDB
@@ -21,15 +25,17 @@ function hideOverlay(string id);
 //Erstelle eine neue CouchDB-Klasse mit new CouchDB();
 class CouchDB {
 	//Überprüfe, ob CouchDB online ist. (Wird sowieso automatisch gemacht, wenn get, set oder createDB verwendet wird)
-	async checkOnlineStatus();
+	async checkOnlineStatus() -> bool;
 	
 	//Erstellt die Datenbank. (Wird auch automatisch gemacht, wenn man get oder set verwendet)
-	async createDB();
+	async createDB() -> void;
 	
-	//Bekomme das Objekt, was in der Datenbank unter der id gespeichert wurde
-	async get(string id);
+	//Bekomme das Objekt, was in der Datenbank unter der id gespeichert wurde (Gibt null zurück, wenn nicht vorhanden)
+	async get(string id) -> Map|null;
 	//Setze ein Objekt, was in der Datenbank gespeichert wird (Bedenke: Du musst ein Objekt angeben, alles andere (string, array) wird nicht genommen)
-	async set(string id, object content, boolean replace = true);
+	async set(string id, object content, boolean replace = true) -> Map;
+	//Lösche ein Objekt, was in der Datenbank gespeichert ist
+	async delete(string id) -> Map;
 }
 ```
 
@@ -53,4 +59,14 @@ async function main() {
 	//Gibt { "username": "bla", "password": "bla" } wieder
 }
 main();
+```
+
+##User
+
+```
+//Gebe dir den Nutzer wieder
+async function getUserData(couchDB) -> Map?;
+
+//Setze den Nutzer, welcher unter der Variable userData verfügbar sein wird
+async function setUserData(couchDB) -> bool;
 ```
