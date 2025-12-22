@@ -58,7 +58,7 @@ setUserData(couchDB);
 	margin-bottom: 10px;
 	position: relative;
 }
-.edit_course .evaluation span {
+.edit_course .evaluation input {
 	display: inline-block;
 	font-size: 20px !important;
 	width: calc(100% - 80px);
@@ -93,7 +93,7 @@ setUserData(couchDB);
 <textarea placeholder="Beschreibung"></textarea><br><br>
 <div class="evaluations">
 <div></div>
-<button class="add_button">+</button>
+<button class="add_button" onclick="createNewEvaluation()">+</button>
 </div><br>
 <button onclick="saveEditCourse()">Speichern</button>
 </overlay>
@@ -102,7 +102,10 @@ setUserData(couchDB);
 
 async function showEditCourse(name) {
 	const data = await couchDB.get("course:" + name);
-	if (data.owner != userData.name) return;
+	if (data.owner != userData.name) {
+		console.error("User is not author");
+		return;
+	}
 	
 	showOverlay("edit_course");
 	
@@ -121,17 +124,26 @@ async function showEditCourse(name) {
 		evaluations.innerHTML += createEvaluation(i);
 	}
 }
+function createNewEvaluation() {
+	const elm = getOverlay("edit_course");
+	if (elm == null) return;
+	
+	const evaluations = elm.querySelector(".evaluations > div");
+	evaluations.innerHTML += createEvaluation({
+		"title": "", "type": "text"
+	});
+}
 function createEvaluation(question) {
 	return `
-	<div class="evaluation">
-	<button>🗑</button>
-	<span>${question.title}</span>
+<div class="evaluation">
+	<button onclick="this.parentElement.remove();">🗑</button>
+	<input value="${question.title}">
 	<select>
 		<option value="text" ${question.type == "text" ? "selected": ""}>Text</option>
 		<option value="scala" ${question.type == "scala" ? "selected": ""}>Scala</option>
 		<option value="emoji" ${question.type == "emoji" ? "selected": ""}>Emoji</option>
 	</select>
-	</div>
+</div>
 	`;
 }
 async function saveEditCourse() {
@@ -144,6 +156,20 @@ async function saveEditCourse() {
 	
 	data["title"] = title.value;
 	data["description"] = description.value;
+	
+	const evaluations = elm.querySelector(".evaluations > div");
+	const questions = [];
+	for (var i of evaluations.getElementsByClassName("evaluation")) {
+		const inpE = i.querySelector("input");
+		const selE = i.querySelector("select");
+		if (inpE.value.length == 0) continue;
+		
+		questions.push({
+			"title": inpE.value,
+			"type": selE.value
+		});
+	}
+	data["questions"] = questions;
 	
 	await couchDB.delete("course:" + oldID);
 	await couchDB.set("course:" + title.value.toLowerCase(), data);
