@@ -106,10 +106,10 @@ Abgabe-Termin: <input type="date"><br><br>
 
 async function showEditCourse(name) {
 	const data = await couchDB.get("course:" + name);
-	if (data.owner != userData.name) {
+	/*if (data.owner != userData.name) {
 		console.error("User is not author");
 		return;
-	}
+	}*/
 	
 	showOverlay("edit_course");
 	

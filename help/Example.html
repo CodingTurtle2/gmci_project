@@ -39,10 +39,9 @@ test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>
 
 showOverlay("overlay1");
 
-//setTimeout(() => hideOverlay("overlay1"), 3000);
+const couchDB = new CouchDB();
 
 async function main() {
-	const couchDB = new CouchDB();
 	await couchDB.set("xample", {
 		"my_data": 1,
 		"more_data": "bla"
@@ -54,7 +53,9 @@ async function main() {
 }
 
 main();
-createTemp();
+createTemp().then((v) => {
+	setUserData(couchDB);
+});
 
 </script>
 

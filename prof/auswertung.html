@@ -6,19 +6,75 @@
 <link rel="stylesheet" href="../lib/basic.css">
 <script src="../auth.js"></script>
 <script src="../lib/basic.js"></script>
-<script>
-const couchDB = new CouchDB();
-setUserData(couchDB);
-</script>
 </head>
 <body>
 <style>
+.header_bar_1 > div:first-child > div {
+	display: inline;
+	padding: 10px;
+	padding-right: 30px;
+}
+.header_bar_1 > div:first-child > div:hover {
+	background: rgba(127, 127, 127, 0.4);
+	border-radius: var(--border-radius);
+}
+
+.content-table {
+	height: calc(100% - 75px);
+	max-height: calc(100% - 75px);
+	min-height: calc(100% - 75px);
+	width: 100%;
+	position: fixed;
+	top: 75px;
+	left: 0;
+}
+.content-table > tbody > tr:first-child > td:first-child {
+	width: 35%;
+	vertical-align: top;
+	padding: 20px;
+	padding-right: 10px;
+	height: 100%;
+}
+.content-table > tbody > tr:first-child > td > div {
+	display: inline-block;
+	width: 100%;
+	border: 3px solid var(--accent_color_bg);
+	border-radius: var(--border-radius);
+	padding: 10px;
+	box-shadow: var(--reversed_def_shadow);
+	background: var(--accent_color_bg_o2);
+	min-height: 150px;
+}
+.content-table > tbody > tr:first-child > td:last-child {
+	width: 65%;
+	height: 100px;
+	vertical-align: top;
+	padding: 20px;
+	padding-left: 10px !important;
+}
+.content-table > tbody > tr:first-child > td:last-child > div {
+	height: 100%;
+	max-height: 100%;
+	padding: 15px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+#umfrage_list > div {
+	padding: 10px;
+	border: 2px solid var(--accent_color_bg);
+	border-radius: var(--border-radius);
+	width: 100%;
+	min-height: 100px;
+	margin-bottom: 10px;
+}
 </style>
 
 <div class="header_bar_1">
-	<div onclick="location.href = './uebersicht.html?user=' + userData.name;">
-		<div style="border-radius: 50%; border: 1px solid black; display: inline-block; text-align: center; width: 32px; font-size: 25px;">⇦</div>
-		&nbsp;&nbsp;Meine Kurse
+	<div>
+		<div onclick="location.href = './uebersicht.html?user=' + userData.name;">
+			<div style="border-radius: 50%; border: 1px solid black; display: inline-block; text-align: center; width: 32px; font-size: 25px;">⇦</div>
+			&nbsp;&nbsp;Meine Kurse
+		</div>
 	</div>
 	<div><b>Auswertungen</b></div>
 	<div>
@@ -27,7 +83,143 @@ setUserData(couchDB);
 </div>
 <div class="header_bar_1_placeholder"></div>
 
+<table class="content-table"><tr>
+	<td><div>
+		<div id="gesamt" class="selectable"></div>
+	</div></td>
+	<td><div>
+		<div id="umfrage_list"></div>
+	</div></td>
+</tr></table>
+
 <script>
+
+const couchDB = new CouchDB();
+setUserData(couchDB).then(init);
+
+var gesamtAuswertung = [0,0,0, []];
+
+async function loadStats() {
+	const gdiv = getId("gesamt");
+	const udiv = getId("umfrage_list");
+	
+	udiv.innerHTML = "";
+	gesamtAuswertung = [0,0,0, []];
+	for (var i of userData.courses) {
+		const course = await couchDB.get("course:" + i);
+		if (course == null) continue;
+		
+		for (var i2 of (course["result_history"] ?? [])) {
+			udiv.innerHTML +=	_createElement1(course, i2);
+		}
+		udiv.innerHTML +=	_createElement1(course, {
+			"date": course.expire_date,
+			"questions": course.questions ?? [],
+			"result": course.result ?? []
+		});
+	}
+	
+	let studenten = gesamtAuswertung[3].reduce((acc, val) => acc + val, 0) / gesamtAuswertung[3].length;
+
+	
+	gdiv.innerHTML = `
+<b>Gesamtbewertung:</b><br><br>
+Positiv bewertet: ${gesamtAuswertung[0]}<br>
+Neutral bewertet: ${gesamtAuswertung[1]}<br>
+Negativ bewertet: ${gesamtAuswertung[2]}<br><br>
+<i>Studenten im Durchschnitt:</i> ${studenten}
+	`;
+}
+
+function _createElement1(course, data) {
+	const startDate = data.date;
+	const title = course.title;
+	
+	var startD = "Unbekannt";
+	if (startDate) {
+		startD = new Date(startDate).toLocaleDateString('de-DE', {year: 'numeric', month: 'long', day: 'numeric'});
+	}
+	
+	var statCount = [0,0,0];
+	for (var i in data.result) {
+		const result = data.result[i];
+		
+		for (var i2 in result) {
+			const question = data.questions[i2];
+			const answer = result[i2];
+			
+			if (question.type == "text") {
+				continue;
+			} else if (question.type == "scala") {
+				if (answer == 5 || answer == 4) {
+					statCount[0] ++;
+				} else if (answer == 3) {
+					statCount[1] ++;
+				} else if (answer == 1 || answer == 2) {
+					statCount[2] ++;
+				}
+			} else if (question.type == "emoji") {
+				if (answer == 3) {
+					statCount[0] ++;
+				} else if (answer == 2) {
+					statCount[1] ++;
+				} else if (answer == 1) {
+					statCount[2] ++;
+				}
+			}
+		}
+		gesamtAuswertung[3].push(result.length);
+	}
+		
+	var total = statCount.reduce((acc, val) => acc + val, 0);
+	var percentages;
+	if (total > 0) {
+		percentages = statCount.map(value => (value / total) * 100);
+	} else {
+		percentages = [0, 0, 0];
+	}
+	
+	var endNote;
+	if (percentages[0] > percentages[1] && percentages[0] > percentages[2]) {
+		endNote = "Überwiegend positiv";
+		gesamtAuswertung[0] ++;
+	} else if (percentages[2] > percentages[0] && percentages[2] > percentages[1]) {
+		endNote = "Überwiegend negativ";
+		gesamtAuswertung[2] ++;
+	} else {
+		endNote = "Gemischt";
+		gesamtAuswertung[1] ++;
+	}
+
+	
+	return `<div>
+<table style="width: 100%; border-collapse:collapse; " class="selectable">
+<tr>
+<td style="vertical-align: top; width: 60%; border-bottom: 1px solid black;">
+	Umfrage vom ${startD}
+</td>
+<td style="vertical-align: top; text-align: right; width: 40%; border-bottom: 1px solid black;">
+	&nbsp;&nbsp;Kurs: ${title}
+</td>
+</tr>
+<tr>
+<td style="padding-left: 15px; display: inline-block; padding-top: 10px; vertical-align: top;">
+	Positive: ${percentages[0]}%<br>
+	Negative: ${percentages[2]}%<br>
+	Neutral: ${percentages[1]}%<br>
+</td>
+<td style="padding-top: 10px; vertical-align: top;">
+	<u>Endnote</u>: ${endNote}
+</td>
+</tr>
+</table>
+	</div>`;
+}
+
+async function init() {
+	await loadStats();
+}
+
 </script>
 </body>
 </html>
