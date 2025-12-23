@@ -70,3 +70,10 @@ async function getUserData(couchDB) -> Map?;
 //Setze den Nutzer, welcher unter der Variable userData verfügbar sein wird
 async function setUserData(couchDB) -> bool;
 ```
+
+##Nützliche CSS-Klassen
+- .profile = Runde Profilbox
+- overlay = Overlay
+- .header_bar_1 = Headerbar
+- .header_bar_1_placeholder = Platzhalter für Headerbar
+- .add_button = Runder "Hinzufügen"-Knopf

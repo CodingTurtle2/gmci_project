@@ -39,22 +39,23 @@ test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>test<br>
 
 showOverlay("overlay1");
 
-//setTimeout(() => hideOverlay("overlay1"), 3000);
+const couchDB = new CouchDB();
 
 async function main() {
-	const couchDB = new CouchDB();
 	await couchDB.set("xample", {
 		"my_data": 1,
 		"more_data": "bla"
 	});
 
-	const data = await couchDB.get("login");
+	const data = await couchDB.get("xample");
 	console.log(JSON.stringify(data));
-	//Gibt { "username": "bla", "password": "bla" } wieder
+	//Gibt { "my_data": 1, "more_data": "bla" } wieder
 }
 
 main();
-createTemp();
+createTemp().then((v) => {
+	setUserData(couchDB);
+});
 
 </script>
 

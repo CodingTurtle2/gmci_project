@@ -1,11 +1,14 @@
 :root {
-	--accent_color_fg: #007bff;
+	--accent_color_fg: rgba(0, 123, 255, 1);
+	--accent_color_fg_o: rgba(0, 123, 255, 0.5);
 	--accent_color_bg: rgba(137, 197, 221, 1);
 	--accent_color_bg_o: rgba(137, 197, 221, 0.5);
+	--accent_color_bg_o2: rgba(137, 197, 221, 0.25);
 	--main_color_fg: white;
 	--main_color_bg: black;
 	--border-radius: 10px;
 	--def-shadow: 10px 20px 20px rgb(128, 128, 128, 0.5);
+	--reversed_def_shadow: inset 1px 2.5px 2.5px rgb(128, 128, 128, 0.5);
 }
 * {
 	box-sizing: border-box;
@@ -24,10 +27,10 @@ body, html {
 	font-size: 20px;
 }
 ::selection {
-	background-color: var(--accent_color_fg);
+	background-color: var(--accent_color_fg_o);
 	color: black;
 }
-selectable {
+.selectable {
 	-webkit-user-select: text;
 	-moz-user-select: text;
 	-ms-user-select: text;
@@ -42,6 +45,14 @@ selectable {
 	border-radius: 50%;
 	background: var(--accent_color_bg);
 	border: none;
+	background-size: 58px 58px;
+}
+input {
+	font-size: 18px;
+	background: none;
+	border: 1px solid black;
+	border-radius: var(--border-radius);
+	padding: 4px;
 }
 
 /* ----------- overlay ----------- */
@@ -72,6 +83,8 @@ overlay {
 	left: 50%;
 	min-width: 250px;
 	min-height: 150px;
+	max-height: 95%;
+	max-width: 95%;
 	transform: translate(-50%, -50%);
 	background: var(--accent_color_bg_o);
 	backdrop-filter: blur(10px);
@@ -117,6 +130,7 @@ overlay {
 }
 .header_bar_1 > div:nth-child(1) {
 	text-align: left;
+	width: 100%;
 }
 .header_bar_1 > div:nth-child(2) {
 	text-align: center;
@@ -124,6 +138,7 @@ overlay {
 }
 .header_bar_1 > div:nth-child(3) {
 	text-align: right;
+	width: 100%;
 }
 
 .header_bar_1_placeholder {
@@ -184,4 +199,64 @@ content {
 .add_button:hover {
 	border: 2px solid grey;
 	background-color: lightgray;
+}
+
+
+
+dropdown {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: none;
+	z-index: 300;
+}
+dropdown > div:first-child {
+	width: 100%;
+	height: 100%;
+	background: none;
+}
+dropdown > div:last-child {
+	position: absolute;
+	background: var(--accent_color_bg_o);
+	backdrop-filter: blur(10px);
+	border-radius: var(--border-radius);
+	transform: translate(calc(-100% + 50px), 5px);
+	width: 200px;
+	display: flex;
+	flex-direction:column;
+	box-shadow: var(--def-shadow);
+}
+dropdown > div:last-child label {
+	background: none;
+	font-size: 20px;
+	border: none;
+	border-bottom: 1px solid black;
+	padding-top: 8px;
+	padding-bottom: 8px;
+	font-weight: normal;
+	text-align: center;
+}
+dropdown > div:last-child button {
+	background: none;
+	font-size: 20px;
+	border: none;
+	border-bottom: 1px solid black;
+	padding-top: 8px;
+	padding-bottom: 8px;
+	font-weight: normal;
+	text-align: center;
+}
+dropdown > div:last-child button:hover {
+	background: var(--accent_color_fg_o);
+}
+dropdown > div:last-child button:first-child {
+	border-top-left-radius: var(--border-radius);
+	border-top-right-radius: var(--border-radius);
+}
+dropdown > div:last-child button:last-child {
+	border-bottom: none;
+	border-bottom-left-radius: var(--border-radius);
+	border-bottom-right-radius: var(--border-radius);
 }

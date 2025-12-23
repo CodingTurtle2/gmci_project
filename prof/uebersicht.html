@@ -2,13 +2,13 @@
 <html>
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="../lib/basic.css">
 <script src="../auth.js"></script>
 <script src="../lib/basic.js"></script>
 <script>
 const couchDB = new CouchDB();
 setUserData(couchDB);
-
 </script>
 <title>Übersicht</title>
 </head>
@@ -62,7 +62,7 @@ setUserData(couchDB);
 .edit_course .evaluations {
 	overflow-y: auto;
 	text-align: center;
-	max-height: 400px;
+	max-height: 300px;
 	border: 2px solid grey;
 	padding: 10px;
 	border-radius: var(--border-radius);
@@ -109,11 +109,15 @@ setUserData(couchDB);
 
 <overlay id="edit_course">
 <input placeholder="Kursname" style="width: calc(100% - 50px);"><br><br>
+Beschreibung:
 <textarea placeholder="Beschreibung"></textarea><br><br>
+Feedback-Fragen:
 <div class="evaluations">
 <div></div>
 <button class="add_button" onclick="createNewEvaluation()">+</button>
 </div><br>
+Start-Termin: <input type="date" style="margin-bottom: 5px;"><br>
+Abgabe-Termin: <input type="date"><br><br>
 <button onclick="saveEditCourse()">Speichern</button>
 </overlay>
 
@@ -121,21 +125,23 @@ setUserData(couchDB);
 
 async function showEditCourse(name) {  // 
 	const data = await couchDB.get("course:" + name);
-	if (data.owner != userData.name) {
+	/*if (data.owner != userData.name) {
 		console.error("User is not author");
 		return;
-	}
+	}*/
 	
 	showOverlay("edit_course");
 	
 	const elm = getOverlay("edit_course");
 	
-	const title = elm.getElementsByTagName("input")[0];
+	const inputs = elm.getElementsByTagName("input");
 	const description = elm.getElementsByTagName("textarea")[0];
 	
-	title.value = data.title;
-	title.setAttribute("oldID", name);
+	inputs[0].value = data.title;
+	inputs[0].setAttribute("oldID", name);
 	description.value = data.description;
+	inputs[1].value = data["start_date"] ?? "";
+	inputs[2].value = data["expire_date"] ?? "";
 	
 	const evaluations = elm.querySelector(".evaluations > div");
 	
@@ -167,13 +173,13 @@ function createEvaluation(question) {
 }
 async function saveEditCourse() {
 	const elm = getOverlay("edit_course");
-	const title = elm.getElementsByTagName("input")[0];
+	const inputs = elm.getElementsByTagName("input");
 	const description = elm.getElementsByTagName("textarea")[0];
 	
-	const oldID = title.getAttribute("oldID");
+	const oldID = inputs[0].getAttribute("oldID");
 	const data = await couchDB.get("course:" + oldID);
 	
-	data["title"] = title.value;
+	data["title"] = inputs[0].value;
 	data["description"] = description.value;
 	
 	const evaluations = elm.querySelector(".evaluations > div");
@@ -189,9 +195,20 @@ async function saveEditCourse() {
 		});
 	}
 	data["questions"] = questions;
+	evaluations.remove();
+	
+	if (inputs[1].value.length > 0) {
+		let dateObject = new Date(inputs[1].value);
+		let dateString = dateObject.toISOString().split('T')[0];
+		data["start_date"] = dateString;
+	} if (inputs[2].value.length > 0) {
+		let dateObject = new Date(inputs[2].value);
+		let dateString = dateObject.toISOString().split('T')[0];
+		data["expire_date"] = dateString;
+	}
 	
 	await couchDB.delete("course:" + oldID);
-	await couchDB.set("course:" + title.value.toLowerCase(), data);
+	await couchDB.set("course:" + inputs[0].value.toLowerCase(), data);
 	
 	hideOverlay("edit_course");
 }

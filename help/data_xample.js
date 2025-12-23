@@ -58,7 +58,22 @@ async function createTemp() {
 		"result": [
 			["YES", "YES", 5, 2],
 			["YES", "YES", 1, 3]
-		]
+		],
+		"result_history": [
+			{
+				"date": "2025-12-27",
+				"questions": [
+					{ "title": "1", "type": "text" },
+					{ "title": "2", "type": "scala" }
+				],
+				"result": [
+					["Gut, aber ...", 5],
+					["Schlecht", 1]
+				]
+			}
+		],
+		"start_date": "2025-12-23",
+		"expire_date": "2025-12-27"
 	});
 	await couchDB.set("course:weiche_ware", {
 		"title": "Weiche Ware",
@@ -77,6 +92,21 @@ async function createTemp() {
 		"result": [
 			["Gut, aber ...", 5],
 			["Schlecht", 1]
-		]
+		],
+		"result_history": [
+			{
+				"date": "2025-12-27",
+				"questions": [
+					{ "title": "1", "type": "text" },
+					{ "title": "2", "type": "scala" }
+				],
+				"result": [
+					["Gut, aber ...", 5],
+					["Schlecht", 1]
+				]
+			}
+		],
+		"start_date": "2025-12-23",
+		"expire_date": "2025-12-27"
 	});
 }
