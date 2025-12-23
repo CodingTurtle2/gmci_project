@@ -33,6 +33,7 @@ setUserData(couchDB);
 <div class="header_bar_1_placeholder"></div>
 
 <content>
+	<!-- 
 	<div class="course-card">
 		<div class="course-title">
 			HCI
@@ -49,6 +50,8 @@ setUserData(couchDB);
 			</button>
 		</div>
 	</div>
+	-->
+	<div id="course-list"></div>
 </content>
 
 <style>
@@ -83,7 +86,7 @@ button.auswertung:hover {
 	box-shadow: var(--def-shadow);
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
+	gap: 10px;
 }
 
 .course-title {
@@ -142,10 +145,53 @@ button.auswertung:hover {
 	background: var(--accent_color_bg_o);
 	border-radius: var(--border-radius);
 }
+
+#course-list {
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+}
+
 </style>
 
 <script>
+(async () => {
+	const courseList = document.getElementById("course-list");
 	
+	await setUserData(couchDB);
+
+	for(const courseId of userData.courses) {
+		const course = await couchDB.get("course:" + courseId);
+
+		const card = document.createElement("div");
+		card.className = "course-card";
+
+		card.innerHTML = `
+		<div class="course-title">${course.title}</div>
+
+		<div class="course-description">
+			${course.description}
+		</div>
+
+		<button class="action start">
+			Umfrage Starten
+		</button>
+
+		<button class="action edit" onclick="editCourse('${courseId}')">
+			✎
+		</button>
+		`;
+		courseList.appendChild(card);
+	}
+})();
+	
+
+	function editCourse(courseId) {
+		return
+	}
+
+	
+
 </script>
 	
 <!--Implementiere hier dein Zeugs-->
