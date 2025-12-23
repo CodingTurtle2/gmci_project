@@ -14,11 +14,13 @@ setUserData(couchDB);
 </head>
 <body>
 	<div class="header_bar_1">
-	<div>
-		test1
+	<div style="font-weight: bold;">
+		Meine Kurse
 	</div>
 	<div>
-		test2
+		<button class="Auswertung" onclick='location.href = "./auswertung.html?user=" + userData.name'>
+			Auswertungen
+		</button>
 	</div>
 	<div>
 		<button class="profile" onclick='showOverlay("miniProfile")'>
@@ -30,6 +32,38 @@ setUserData(couchDB);
 </div>
 <div class="header_bar_1_placeholder"></div>
 
+<content>
+
+</content>
+
+<style>
+button.Auswertung {
+	font-size: 20px;
+	padding: 15px;
+	padding-left: 40px;
+	padding-right: 40px;
+	background-color: var(--accent_color_bg);
+	border: none;
+	border-radius: var(--border-radius);
+	cursor: pointer;
+}
+
+button.Auswertung:focus-visible {
+	outline: 2px var(--accent_color_fg_o);
+	outline-offset: 2px;
+}
+
+button.Auswertung:hover {
+	background: var(--accent_color_bg_o);
+	border-radius: var(--border-radius);
+}
+
+.course-card {
+	width: 300px;
+	padding 16px;
+	
+}
+</style>
 
 <script>
 	
