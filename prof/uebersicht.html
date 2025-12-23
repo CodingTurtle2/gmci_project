@@ -13,10 +13,29 @@ setUserData(couchDB);
 <title>Übersicht</title>
 </head>
 <body>
+	<div class="header_bar_1">
+	<div>
+		test1
+	</div>
+	<div>
+		test2
+	</div>
+	<div>
+		<button class="profile" onclick='showOverlay("miniProfile")'>
+			<overlay id="miniProfile">
+				hello
+			</overlay>
+		</button>
+	</div>
+</div>
+<div class="header_bar_1_placeholder"></div>
 
+
+<script>
+	
+</script>
 	
 <!--Implementiere hier dein Zeugs-->
-	
 	
 <style>
 .edit_course {
@@ -86,7 +105,7 @@ setUserData(couchDB);
 }
 </style>
 
-<button onclick="showEditCourse('bucket')">Open Course:Bucket</button>
+<button onclick="showEditCourse('bucket')">Open Course:Bucket</button> <!--show overlay-->
 
 <overlay id="edit_course">
 <input placeholder="Kursname" style="width: calc(100% - 50px);"><br><br>
@@ -100,7 +119,7 @@ setUserData(couchDB);
 
 <script>
 
-async function showEditCourse(name) {
+async function showEditCourse(name) {  // 
 	const data = await couchDB.get("course:" + name);
 	if (data.owner != userData.name) {
 		console.error("User is not author");
@@ -133,7 +152,7 @@ function createNewEvaluation() {
 		"title": "", "type": "text"
 	});
 }
-function createEvaluation(question) {
+function createEvaluation(question) { 
 	return `
 <div class="evaluation">
 	<button onclick="this.parentElement.remove();">🗑</button>
