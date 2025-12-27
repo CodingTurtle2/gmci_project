@@ -13,7 +13,6 @@ setUserData(couchDB);
 </script>
 <title>Kurs Anzeige</title>
 </head>
-<body>
 <div>
 <body>
 	<div class="header_bar_1">
@@ -26,11 +25,22 @@ setUserData(couchDB);
 			</overlay>
 		</button>
 	</div>
-</div>
-</div>
-<div class="qrImage">
-    <div id="qrCode"></div>
-</div>
+	</div>
+	</div>
+	<div class="contentLayout">	
+		<div class="qrColumn">
+			<div id="qrCode"></div>
+			<span id="accesCode"></span>
+		</div>
+		
+		<div class="questionColumn">
+			<div id="questionCards"></div>
+		</div>
+	</div>	
+	<button class="live" id="liveButton" onclick="AnsichtZeigen()">
+		Live Ansicht
+	</button>
+</body>
 
 
 <script>
@@ -41,16 +51,216 @@ setUserData(couchDB);
 			console.error("Keine courseId in der URL");
 	}
 
-    const qrCodeUrl = `${window.location.origin}/student/XXXXXXXXX?course=${courseId}`;
+    const qrCodeUrl = `${window.location.origin}/student/umfrage?course=${courseId}`;
 
     new QRCode(document.getElementById("qrCode"), {
         text: qrCodeUrl,
-        widh: 200,
-        height: 200,
+        width: 500,
+        height: 500,
     })
+
+	const accesCodeElem = document.getElementById("accesCode");
+	accesCodeElem.innerText = "Code: " + courseId;
+
+	async function AnsichtZeigen() {
+
+		const liveButton = document.getElementById("liveButton")
+		liveButton.style.display = "none";
+
+		const questionList = document.getElementById("questionCards");
+
+		const courseInfo = await couchDB.get("course:" + courseId)
+		let index = 0;
+		for(const question of courseInfo.questions) {
+			const overlayId = `qOver${index}`
+			const answerContainerId = `answerContainer${index}`;
+			
+
+			const card = document.createElement("div");
+			card.className = "questionCard";
+
+			card.innerHTML = `
+			<div class="questionTitle">${question.title}</div>
+
+			<button class="questionResults" onclick='questionOverlay("${overlayId}", "${index}")'>
+				Auswertung
+				<overlay id="${overlayId}">
+					<div class="overlayTitle">
+						${question.title}:
+					</div>
+					<div id="${answerContainerId}"></div>
+				</overlay>
+			</button>
+			`;
+			questionList.appendChild(card);
+			index++;
+		}
+
+	}
+	async function questionOverlay(overlayId, index) {
+
+		const awnserList = document.getElementById(`answerContainer${index}`)
+		const courseInfo = await couchDB.get("course:" + courseId)
+		awnserList.innerHTML = "";
+
+		switch(courseInfo.questions[index].type) {
+			case "text":
+				let j = 0;
+				for(awnser of courseInfo.result) {
+					const resultDisplay = document.createElement("div");
+					resultDisplay.className = "overlayTextRes"
+					resultDisplay.innerHTML = `<div>Antwort ${j + 1}:  ${awnser[index]} </div>`
+					awnserList.appendChild(resultDisplay)
+					j++;
+				}
+				break;
+
+			case "scala":
+				let score = 0;
+				for(let j = 0; j < courseInfo.result.length; j++) {score += courseInfo.result[j][index]};
+				score = score / courseInfo.result.length;
+				const percent = (score/5)*100;
+
+				const resultDisplay = document.createElement("div");
+				resultDisplay.className = "overlayScalaRes"
+				resultDisplay.innerHTML = `
+				<div class="overlayTextRes"> ${percent}% positive </div>
+				<div class="scoreBar">
+					<div class="scoreFill" id="scoreFill" style="width: ${(score/5)*100}%"></div>
+				</div>`;
+				
+				awnserList.appendChild(resultDisplay);
+
+				const scoreFill = document.getElementById("scoreFill")
+				if(percent < 40) {
+					scoreFill.style.backgroundColor = "red";
+				} else if(percent < 70) {
+					scoreFill.style.backgroundColor = "orange";
+				} else {
+					scoreFill.style.backgroundColor = "green";
+				}
+				break;
+
+			case "emoji":
+				let scoreE = 0;
+				for(let j = 0; j < courseInfo.result.length; j++) {scoreE += courseInfo.result[j][index]};
+				scoreE = scoreE / courseInfo.result.length;
+				const percentE = (scoreE/5)*100;
+
+				const resultDisplayE = document.createElement("div");
+				resultDisplayE.className = "overlayScalaRes"
+				resultDisplayE.innerHTML = `
+				<div class="overlayTextRes"> ${percentE}% positive </div>
+				<div class="scoreBar">
+					<div class="scoreFill" id="scoreFill" style="width: ${(scoreE/5)*100}%"></div>
+				</div>`;
+
+
+				awnserList.appendChild(resultDisplayE);
+
+				const scoreFillE = document.getElementById("scoreFill")
+				if(percentE < 40) {
+					scoreFillE.style.backgroundColor = "red";
+				} else if(percentE < 70) {
+					scoreFillE.style.backgroundColor = "orange";
+				} else {
+					scoreFillE.style.backgroundColor = "green";
+				}
+				
+				break;
+		}
+
+		showOverlay(overlayId);
+	}
 </script>
 
 <style>
+.scoreBar {
+	width: 90vh;
+	height: 30px;
+	background-color: antiquewhite;
+	border-radius: 8px;
+	overflow: hidden;
+	margin-top: 10px;
+}
+
+.scoreFill {
+	height: 100%;
+	width: 0%;
+	background-color: #008000;
+	transition: width 0.5s ease;
+}
+
+overlay {
+	width: 100vh;
+	min-height: 30vh;
+}
+
+.overlayTitle {
+	font-weight: bold;
+	background: var(--accent_color_bg);
+	border-radius: var(--border-radius) + 20px;
+}
+
+.overlayTitle {
+	display: flex;
+	flex-direction: column;
+	padding: 10px;
+	max-width: 90vh;
+}
+
+.overlayTextRes {
+	padding: 10px;
+	font-display: flex;
+	flex-direction: column;
+	min-width: 0;
+	background: var(--accent_color_bg_o);
+	border-radius: var(--border-radius) + 20px;
+	max-width: 90vh;
+}
+
+.contentLayout {
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	gap: 80px;
+	margin-top: 15vh;
+	padding: 0 5vw;
+}
+
+.questionCard {
+	position: relative;
+	width: 400px;
+	min-height: 100px;
+	padding: 16px;
+	background: var(--accent_color_bg_o);
+	border-radius: 12px;
+	box-shadow: var(--def-shadow);
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.questionTitle {
+	margin: 0;
+	padding: 10px;
+	font-size: 18px;
+	font-weight: bold;
+}
+
+.questionResults {
+	margin: 0;
+	font-size: 20px;
+	padding: 10px;
+}
+
+.questionColumn {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	max-width: 320;
+}
+
 button.back {
 	font-size: 20px;
 	padding: 15px;
@@ -71,23 +281,50 @@ button.back:hover {
 	background: var(--accent_color_bg_o);
 	border-radius: var(--border-radius);
 }
-.QrBox {
-
+.qrColumn {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-top: 1vh;
 }
-#qrCode {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+
+#accesCode {
+	font-size: 30px;
+	font-weight: bold;
+	padding: 10px;
+    border-radius: var(--border-radius);
+    background: var(--accent_color_bg_o);
+	box-shadow: var(--def-shadow);
+}
+
+#qrCode  img,
+#qrCode canvas {
     padding: 14px;
-    border: 4px solid var(--accent_color_fg);
-    border-radius: 12px;
-    background: var(--accent_color_bg);
+    border: 4px solid var(--accent_color_fg_o);
+    border-radius: var(--border-radius);
+    background: var(--accent_color_bg_o);
+	box-sizing: border-box;
+	box-shadow: var(--def-shadow);
 }
 
+button.live {
+	position: absolute;
+	padding: 15px;
+	bottom: 8vh;
+	right: 8vh;
+	font-size: 40px;
+	border: none;
+	border-radius: var(--border-radius);
+	cursor: pointer;
+	background-color: var(--accent_color_bg);
+	box-shadow: var(--def-shadow);
+}
 
+button.live:hover {
+	background: var(--accent_color_bg_o);
+}
 
 </style>
 
-</body>
+
 </html>
