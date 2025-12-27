@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="../lib/basic.css">
 <script src="../auth.js"></script>
 <script src="../lib/basic.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 <script>
 const couchDB = new CouchDB();
 setUserData(couchDB);
@@ -13,7 +14,80 @@ setUserData(couchDB);
 <title>Kurs Anzeige</title>
 </head>
 <body>
+<div>
+<body>
+	<div class="header_bar_1">
+	<button class="back" onclick="location.href = './uebersicht.html?user=' + userData.name;">
+		Übersicht
+    </button>
+	<div>
+		<button class="profile" onclick='showOverlay("miniProfile")' style="position: absolute; top: 7px; right: 15px;">
+			<overlay id="miniProfile">
+			</overlay>
+		</button>
+	</div>
+</div>
+</div>
+<div class="qrImage">
+    <div id="qrCode"></div>
+</div>
 
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const courseId = params.get("course"); 
+
+    if (!courseId) {
+			console.error("Keine courseId in der URL");
+	}
+
+    const qrCodeUrl = `${window.location.origin}/student/XXXXXXXXX?course=${courseId}`;
+
+    new QRCode(document.getElementById("qrCode"), {
+        text: qrCodeUrl,
+        widh: 200,
+        height: 200,
+    })
+</script>
+
+<style>
+button.back {
+	font-size: 20px;
+	padding: 15px;
+	padding-left: 40px;
+	padding-right: 40px;
+	background-color: var(--accent_color_bg);
+	border: none;
+	border-radius: var(--border-radius);
+	cursor: pointer;
+}
+
+button.back:focus-visible {
+	outline: 2px var(--accent_color_fg_o);
+	outline-offset: 2px;
+}
+
+button.back:hover {
+	background: var(--accent_color_bg_o);
+	border-radius: var(--border-radius);
+}
+.QrBox {
+
+}
+#qrCode {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 14px;
+    border: 4px solid var(--accent_color_fg);
+    border-radius: 12px;
+    background: var(--accent_color_bg);
+}
+
+
+
+</style>
 
 </body>
 </html>
