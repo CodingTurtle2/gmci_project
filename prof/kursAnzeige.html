@@ -126,13 +126,13 @@ setUserData(couchDB);
 				resultDisplay.innerHTML = `
 				<div class="overlayTextRes"> ${percent}% positive </div>
 				<div class="scoreBar">
-					<div class="scoreFill" id="scoreFill" style="width: ${(score/5)*100}%"></div>
+					<div class="scoreFill" id="scoreFill${index}" style="width: ${(score/5)*100}%"></div>
 				</div>`;
 				
 				awnserList.appendChild(resultDisplay);
 
-				const scoreFill = document.getElementById("scoreFill")
-				if(percent < 40) {
+				const scoreFill = document.getElementById(`scoreFill${index}`)
+				if(percent < 30) {
 					scoreFill.style.backgroundColor = "red";
 				} else if(percent < 70) {
 					scoreFill.style.backgroundColor = "orange";
@@ -152,14 +152,14 @@ setUserData(couchDB);
 				resultDisplayE.innerHTML = `
 				<div class="overlayTextRes"> ${percentE}% positive </div>
 				<div class="scoreBar">
-					<div class="scoreFill" id="scoreFill" style="width: ${(scoreE/5)*100}%"></div>
+					<div class="scoreFill" id="scoreFill${index}" style="width: ${(scoreE/5)*100}%"></div>
 				</div>`;
 
 
 				awnserList.appendChild(resultDisplayE);
 
-				const scoreFillE = document.getElementById("scoreFill")
-				if(percentE < 40) {
+				const scoreFillE = document.getElementById(`scoreFill${index}`)
+				if(percentE < 30) {
 					scoreFillE.style.backgroundColor = "red";
 				} else if(percentE < 70) {
 					scoreFillE.style.backgroundColor = "orange";
