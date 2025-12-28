@@ -13,18 +13,17 @@ setUserData(couchDB);
 </script>
 <title>Kurs Anzeige</title>
 </head>
-<div>
 <body>
 	<div class="header_bar_1">
 	<button class="back" onclick="location.href = './uebersicht.html?user=' + userData.name;">
 		Übersicht
     </button>
 	<div>
-		<button class="profile" onclick='showOverlay("miniProfile")' style="position: absolute; top: 7px; right: 15px;">
-			<overlay id="miniProfile">
+		<!-- <button class="profile" onclick='showOverlay("miniProfile")' style="position: absolute; top: 7px; right: 15px;">
+			<overlay class="my_overlay" id="miniProfile">
 			</overlay>
-		</button>
-	</div>
+		</button> -->
+		<button class="profile" style="position: absolute; top: 7px; right: 15px;"></button>
 	</div>
 	</div>
 	<div class="contentLayout">	
@@ -84,7 +83,7 @@ setUserData(couchDB);
 
 			<button class="questionResults" onclick='questionOverlay("${overlayId}", "${index}")'>
 				Auswertung
-				<overlay id="${overlayId}">
+				<overlay class="my_overlay" id="${overlayId}">
 					<div class="overlayTitle">
 						${question.title}:
 					</div>
@@ -191,7 +190,7 @@ setUserData(couchDB);
 	transition: width 0.5s ease;
 }
 
-overlay {
+.my_overlay {
 	width: 100vh;
 	min-height: 30vh;
 }
@@ -199,7 +198,8 @@ overlay {
 .overlayTitle {
 	font-weight: bold;
 	background: var(--accent_color_bg);
-	border-radius: var(--border-radius) + 20px;
+	/*border-radius: calc(var(--border-radius) + 20px);*/
+	border-radius: var(--border-radius) var(--border-radius) 0 0;
 }
 
 .overlayTitle {
@@ -215,8 +215,14 @@ overlay {
 	flex-direction: column;
 	min-width: 0;
 	background: var(--accent_color_bg_o);
-	border-radius: var(--border-radius) + 20px;
+	/*border-radius: calc(var(--border-radius) + 20px);*/
 	max-width: 90vh;
+}
+#answerContainer0 .overlayTextRes:last-child {
+	border-radius: 0 0 var(--border-radius) var(--border-radius);
+}
+#answerContainer1 .overlayScalaRes:last-child > .overlayTextRes {
+	border-radius: 0 0 var(--border-radius) var(--border-radius);
 }
 
 .contentLayout {

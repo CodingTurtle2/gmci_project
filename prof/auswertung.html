@@ -9,7 +9,23 @@
 </head>
 <body>
 <style>
-.header_bar_1 > div:first-child > div {
+
+button.navigation {
+	font-size: 20px;
+	padding: 15px 15px;
+	background-color: var(--accent_color_bg);
+	border: none;
+	border-radius: var(--border-radius);
+	cursor: pointer;
+	text-align: center;
+	min-width: min(calc(160px + 40px), 100%);
+	white-space: nowrap;
+}
+button.navigation:hover {
+	background: var(--accent_color_bg_o);
+}
+
+/*.header_bar_1 > div:first-child > div {
 	display: inline;
 	padding: 10px;
 	padding-right: 30px;
@@ -17,7 +33,7 @@
 .header_bar_1 > div:first-child > div:hover {
 	background: rgba(127, 127, 127, 0.4);
 	border-radius: var(--border-radius);
-}
+}*/
 
 .content-table {
 	height: calc(100% - 75px);
@@ -71,9 +87,8 @@
 
 <div class="header_bar_1">
 	<div>
-		<div onclick="location.href = './uebersicht.html?user=' + userData.name;">
-			<div style="border-radius: 50%; border: 1px solid black; display: inline-block; text-align: center; width: 32px; font-size: 25px;">⇦</div>
-			&nbsp;&nbsp;Meine Kurse
+		<div>
+			<button onclick="location.href = './uebersicht.html?user=' + userData.name;" class="navigation">Meine Kurse</button>
 		</div>
 	</div>
 	<div><b>Auswertungen</b></div>

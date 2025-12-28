@@ -1,4 +1,7 @@
 //=> use showSkillTree() -> void;
+//=> use playLevelSound() -> void;
+//=> use playXPSound() -> void;
+
 
 const getSkillTree = () => ({
 	id: "root",
@@ -291,4 +294,11 @@ function generateSkillTree(skillTree, abilities) {
 
 	drawNode(null, skillTree);
 	return [svg, levelCount];
+}
+
+async function playLevelSound() {
+	await playSound("../audio/levelup2.mp3");
+}
+async function playXPSound() {
+	await playSound("../audio/levelup1.mp3");
 }

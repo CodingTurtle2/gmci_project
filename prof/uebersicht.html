@@ -78,7 +78,7 @@ button.auswertung:hover {
 
 .course-card {
 	position: relative;
-	width: 800px;
+	width: 100%;
 	min-height: 300px;
 	padding: 16px;
 	background: var(--accent_color_bg_o);
@@ -186,11 +186,9 @@ button.auswertung:hover {
 })();
 	
 
-	function editCourse(courseId) {
-		return
-	}
-
-	
+function editCourse(courseId) {
+	showEditCourse(courseId);
+}
 
 </script>
 	
@@ -263,8 +261,6 @@ button.auswertung:hover {
 	font-weight: normal;
 }
 </style>
-
-<button onclick="showEditCourse('bucket')">Open Course:Bucket</button> <!--show overlay-->
 
 <overlay id="edit_course">
 <input placeholder="Kursname" style="width: calc(100% - 50px);"><br><br>

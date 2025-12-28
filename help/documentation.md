@@ -74,9 +74,18 @@ async function setUserData(CouchDB couchDB) -> bool;
 async function updateUserData(CouchDB couchDB, object userData) -> Map;
 ```
 
+##Other
+
+```
+//Spielt einen sound ab
+//(Funktioniert nur, wenn vorher eine Nutzerinteraktion erfolgt ist (Button-Click etc.))
+async function playSound(string src) -> void;
+```
+
 ##Nützliche CSS-Klassen
 - .profile = Runde Profilbox
 - overlay = Overlay
 - .header_bar_1 = Headerbar
 - .header_bar_1_placeholder = Platzhalter für Headerbar
 - .add_button = Runder "Hinzufügen"-Knopf
+
