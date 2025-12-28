@@ -5,7 +5,12 @@ async function createTemp() {
 			"password": "1234",
 			"level": 1,
 			"avatar": null,
-			"abilities": [],
+			"abilities": [
+				"dark_mode"
+			],
+			"enabled_abilities": [
+				"dark_mode"
+			],
 			"role": "student",
 			"courses": [
 				"weiche_ware",
@@ -14,9 +19,14 @@ async function createTemp() {
 		},
 		"dumble-door": {
 			"password": "bla",
-			"level": 10,
+			"level": 4,
 			"avatar": "https://static.turtle-coding-gbr.de/profile-pic.png",
-			"abilities": [],
+			"abilities": [
+				"dark_mode"
+			],
+			"enabled_abilities": [
+				"dark_mode"
+			],
 			"role": "professor",
 			"courses": [
 				"weiche_ware"
@@ -24,9 +34,14 @@ async function createTemp() {
 		},
 		"narrator": {
 			"password": "stanley",
-			"level": 100,
+			"level": 4,
 			"avatar": "https://static.turtle-coding-gbr.de/st",
-			"abilities": [],
+			"abilities": [
+				"dark_mode"
+			],
+			"enabled_abilities": [
+				"dark_mode"
+			],
 			"role": "professor",
 			"courses": [
 				"bucket"

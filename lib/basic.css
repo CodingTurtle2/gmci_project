@@ -108,6 +108,13 @@ overlay {
 	font-weight: 600;
 }
 
+.overlay .overlay_title {
+	height: 40px;
+	margin-top: 4px;
+	margin-right: 50px;
+	font-weight: bold;
+}
+
 /* ----------- headerbar ----------- */
 
 .header_bar_1 {

@@ -65,10 +65,13 @@ main();
 
 ```
 //Gebe dir den Nutzer wieder
-async function getUserData(couchDB) -> Map?;
+async function getUserData(CouchDB couchDB) -> Map?;
 
 //Setze den Nutzer, welcher unter der Variable userData verfügbar sein wird
-async function setUserData(couchDB) -> bool;
+async function setUserData(CouchDB couchDB) -> bool;
+
+//Aktualisiert die Nutzerdaten in der Datenbank
+async function updateUserData(CouchDB couchDB, object userData) -> Map;
 ```
 
 ##Nützliche CSS-Klassen
