@@ -115,6 +115,7 @@ async function activateSkill(elm, data) {
 			elm.setAttribute("fill", "lightgreen");
 		}
 		for (var i of coll) {
+			if (!(userData["abilities"] ??= []).includes(i)) continue;
 			exeSkill(i, false);
 			for (var elm of document.getElementsByClassName("skill_" + i)) {
 				elm.setAttribute("fill", "rgb(187, 243, 183)");
