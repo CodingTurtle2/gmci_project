@@ -2,46 +2,6 @@
 //=> use playLevelSound() -> void;
 //=> use playXPSound() -> void;
 
-
-const getSkillTree = () => ({
-	id: "root",
-	text: "Skill-Tree",
-	children: [
-		{
-			text: "DarkMode",
-			id: "dark_mode",
-			description: "Setzt die Theme auf dunkel!",
-			children: [
-				{
-					text: "Bla",
-					description: "Lorem ipsum et idk! Lorem ipsum et idk! Lorem ipsum et idk! Lorem ipsum et idk! Lorem ipsum et idk! Lorem ipsum et idk! Lorem ipsum et idk! Lorem ipsum et idk!",
-					id: "pink_mode",
-					children: []
-				}
-			]
-		},
-		{
-			text: "1",
-			id: "1",
-			description: "one",
-			children: [
-				{
-					text: "2",
-					id: "2",
-					description: "two",
-					children: []
-				},
-				{
-					text: "3",
-					id: "3",
-					description: "three",
-					children: []
-				}
-			]
-		}
-	]
-});
-
 var aSkillPoints = 0;
 
 function showSkillTree() {
@@ -52,6 +12,8 @@ function showSkillTree() {
 		document.body.appendChild(elm);
 	}
 	
+	elm.innerHTML = ``;
+	
 	const div = document.createElement("div");
 	div.style = `
 display: inline-block;
@@ -60,6 +22,7 @@ height: 100%;
 overflow: auto;
 margin-top: 20px;
 text-align: center;
+color: black;
 	`;
 	
 	var res = generateSkillTree(getSkillTree(), userData.abilities)
@@ -77,7 +40,7 @@ text-align: center;
 margin-top: 20px;
 	`;
 	div2.innerHTML = `
-<div style="padding: 10px 30px; background: rgba(255, 255, 255, 0.6); border-radius: var(--border-radius); display: inline-block;">
+<div style="padding: 10px 30px; background: rgba(255, 255, 255, 0.6); border-radius: var(--border-radius); display: inline-block;" class="do-not-color-me">
 Skill-Points: <span class="aSkillPoints">${aSkillPoints}</span>
 </div>
 	`;
@@ -99,7 +62,7 @@ function _getRect(parent, data) {
 	
 	elm.innerHTML = '';
 	const div = document.createElement("div");
-	div.style = `display: inline-block; width: 100%; min-width: 300px; text-align: center;`;
+	div.style = `display: inline-block; width: 100%; min-width: 300px; text-align: center; color: black;`;
 	div.innerHTML = `
 <b style="display: inline-block; margin-top: 5px;">${data.text}</b><br><br>
 <span>${data.description}</span><br><br>
@@ -138,14 +101,24 @@ async function activateSkill(elm, data) {
 	const isEnabled = eAblities.includes(data.id);
 	
 	if (isEnabled) {
+		//disabled
 		userData.enabled_abilities = eAblities.filter((val) => val != data.id);
 		for (var elm of elms) {
 			elm.setAttribute("fill", "rgb(187, 243, 183)");
 		}
 	} else {
+		//enabled
+		const coll = data.collision ??= [];
+		userData.enabled_abilities = eAblities.filter((val) => !coll.includes(val));
 		userData.enabled_abilities.push(data.id);
 		for (var elm of elms) {
 			elm.setAttribute("fill", "lightgreen");
+		}
+		for (var i of coll) {
+			exeSkill(i, false);
+			for (var elm of document.getElementsByClassName("skill_" + i)) {
+				elm.setAttribute("fill", "rgb(187, 243, 183)");
+			}
 		}
 	}
 	
@@ -154,6 +127,19 @@ async function activateSkill(elm, data) {
 	getOverlay("skill_tree_details_overlay").innerHTML = "";
 	await updateUserData(new CouchDB(), userData);
 	hideOverlay("skill_tree_details_overlay");
+	
+	if (!isEnabled) {
+		if (typeof(data.call) == "string") {
+			try { eval(data.call); } catch (err) { console.error(err); }
+		}
+	}
+	exeSkill(data.id, !isEnabled);
+	if (isEnabled) {
+		if (typeof(data.call_unset) == "string") {
+			try { eval(data.call_unset); } catch (err) { console.error(err); }
+		}
+	}
+	refreshOverlays();
 }
 async function _buySkill(data) {
 	const elms = document.getElementsByClassName("skill_" + data.id);
@@ -170,6 +156,8 @@ async function _buySkill(data) {
 	
 	userData.abilities.push(data.id);
 	
+	playXPSound();
+	
 	getOverlay("skill_tree_details_overlay").innerHTML = "";
 	await updateUserData(new CouchDB(), userData);
 	
@@ -183,10 +171,11 @@ function generateSkillTree(skillTree, abilities) {
 	const lvlGap = 100;
 	const borderRadius = getComputedStyle(document.documentElement).getPropertyValue('--border-radius').trim();
 	const siblingGap = 40;
-
+	
 	/* -------- calc layout -------- */
 	
 	function measure_tree(data) {
+		data.children ??= [];
 		if (data.children.length === 0) {
 			data._width = nWidth;
 		} else {
@@ -196,6 +185,7 @@ function generateSkillTree(skillTree, abilities) {
 		}
 		return data._width;
 	}
+	measure_tree(skillTree);
 
 	function calc_tree(data, x, y) {
 		data._x = x;
@@ -211,7 +201,6 @@ function generateSkillTree(skillTree, abilities) {
 		});
 	}
 
-	measure_tree(skillTree);
 	calc_tree(skillTree, 0, 0);
 
 	/* -------- bounding-stuff -------- */

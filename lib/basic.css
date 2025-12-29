@@ -208,7 +208,9 @@ content {
 	background-color: lightgray;
 }
 
-
+.do-not-color-me {
+	color: black !important;
+}
 
 dropdown {
 	position: fixed;
@@ -244,6 +246,7 @@ dropdown > div:last-child label {
 	padding-bottom: 8px;
 	font-weight: normal;
 	text-align: center;
+	color: black;
 }
 dropdown > div:last-child button {
 	background: none;

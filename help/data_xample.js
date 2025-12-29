@@ -6,10 +6,8 @@ async function createTemp() {
 			"level": 1,
 			"avatar": null,
 			"abilities": [
-				"dark_mode"
 			],
 			"enabled_abilities": [
-				"dark_mode"
 			],
 			"role": "student",
 			"courses": [
@@ -22,10 +20,8 @@ async function createTemp() {
 			"level": 4,
 			"avatar": "https://static.turtle-coding-gbr.de/profile-pic.png",
 			"abilities": [
-				"dark_mode"
 			],
 			"enabled_abilities": [
-				"dark_mode"
 			],
 			"role": "professor",
 			"courses": [
@@ -37,10 +33,8 @@ async function createTemp() {
 			"level": 4,
 			"avatar": "https://static.turtle-coding-gbr.de/st",
 			"abilities": [
-				"dark_mode"
 			],
 			"enabled_abilities": [
-				"dark_mode"
 			],
 			"role": "professor",
 			"courses": [
