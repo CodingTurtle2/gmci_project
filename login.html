@@ -1,50 +1,60 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login</title>
-<link rel="stylesheet" href="./lib/basic.css">
-<script src="./auth.js"></script>
-<script src="./lib/basic.js"></script>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Login</title>
+	<link rel="stylesheet" href="./lib/basic.css">
+	<script src="./auth.js"></script>
+	<script src="./lib/basic.js"></script>
 </head>
+
 <body>
-	
-<input id="username"><br>
-<input type="password" id="password">
 
-<button onclick="login()">Submit</button>
-	
-<script>
+	<input id="username"><br>
+	<input type="password" id="password">
 
-const couchDB = new CouchDB();
+	<button onclick="login()">Submit</button>
 
-async function getData() {
-	let res = await couchDB.get("users");
-	if (!res) res = {};
-	return res;
-}
+	<script>
 
-async function login() {
-	const data = await getData();
-	const username = getId("username").value.toLowerCase();
-	const password = getId("password").value;
-	
-	const user = data[username];
-	//{"turtle":{"password": "password","level":1}}
-	if (user == undefined) {
-		alert("Falscher Nutzername!");
-		return;
-	}
-	if (user.password != password) {
-		alert("Falsches Passwort!");
-		return;
-	}
-	
-	location.href = "./prof/uebersicht.html?user=" + username;
-}
+		const couchDB = new CouchDB();
 
-</script>
-	
+		async function getData() {
+			let res = await couchDB.get("users");
+			if (!res) res = {};
+			return res;
+		}
+
+		async function login() {
+			const data = await getData();
+			const username = getId("username").value.toLowerCase();
+			const password = getId("password").value;
+
+			const user = data[username];
+			//{"turtle":{"password": "password","level":1}}
+			if (user == undefined) {
+				alert("Falscher Nutzername!");
+				return;
+			}
+			if (user.password != password) {
+				alert("Falsches Passwort!");
+				return;
+			}
+
+			switch (user.role) {
+				case "professor":
+					location.href = "./prof/uebersicht.html?user=" + username;
+					return;
+				case "student":
+					location.href = "./student/uebersicht.html?user=" + username;
+					return;
+			}
+		}
+
+	</script>
+
 </body>
+
 </html>
