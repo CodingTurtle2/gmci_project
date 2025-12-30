@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Sign Up</title>
+        <link rel="stylesheet" href="./lib/basic.css" />
+        <script src="./auth.js" defer></script>
+        <script src="./lib/basic.js" defer></script>
+        <style>
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+            }
+
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                background-color: #f6f8fa;
+                padding: 2rem 0;
+            }
+
+            .signup-card {
+                background-color: #fff;
+                padding: 2.5rem 2rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                width: 100%;
+                max-width: 400px;
+            }
+
+            .signup-card h1 {
+                text-align: center;
+                margin-bottom: 1.5rem;
+                font-size: 1.5rem;
+            }
+
+            label {
+                display: block;
+                margin-bottom: 0.3rem;
+                font-weight: 600;
+                font-size: 0.9rem;
+            }
+
+            input,
+            select {
+                width: 100%;
+                padding: 0.5rem 0.75rem;
+                margin-bottom: 1rem;
+                border: 1px solid #d1d5da;
+                border-radius: 6px;
+                font-size: 1rem;
+            }
+
+            button {
+                width: 100%;
+                padding: 0.6rem;
+                background-color: #2ea44f;
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                font-size: 1rem;
+                font-weight: 600;
+                cursor: pointer;
+            }
+
+            button:hover {
+                background-color: #279f43;
+            }
+
+            .login-text {
+                text-align: center;
+                margin-top: 1rem;
+                font-size: 0.9rem;
+            }
+
+            .login-text a {
+                color: #0366d6;
+                text-decoration: none;
+            }
+
+            .login-text a:hover {
+                text-decoration: underline;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="signup-card">
+            <h1>Create Account</h1>
+
+            <label for="username">Username</label>
+            <input
+                type="text"
+                id="username"
+                name="username"
+                autocomplete="username"
+                autocapitalize="off"
+                autocorrect="off"
+                required
+                autofocus
+            />
+
+            <label for="password">Password</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                autocomplete="new-password"
+                required
+            />
+
+            <label for="role">Role</label>
+            <select id="role" name="role" required>
+                <option value="student">Student</option>
+                <option value="professor">Professor</option>
+            </select>
+
+            <button type="button" onclick="signup()">Sign up</button>
+
+            <div class="login-text">
+                Already have an account? <a href="login.html">Sign in</a>
+            </div>
+        </div>
+
+        <script>
+            const couchDB = new CouchDB();
+
+            async function getData() {
+                try {
+                    const res = await couchDB.get("users");
+                    return res || {};
+                } catch (e) {
+                    console.error("Failed to get users:", e);
+                    return {};
+                }
+            }
+
+            async function signup() {
+                const username = document
+                    .getElementById("username")
+                    .value.trim()
+                    .toLowerCase();
+                const password = document.getElementById("password").value;
+                const role = document.getElementById("role").value;
+
+                if (!username) {
+                    return alert("Please enter a username!");
+                }
+                if (!password) {
+                    return alert("Please enter a password!");
+                }
+
+                const data = await getData();
+
+                // Check if user already exists
+                if (data[username]) {
+                    return alert("Username already exists!");
+                }
+
+                // Create new user object
+                data[username] = {
+                    password: password,
+                    level: 1,
+                    avatar: null,
+                    abilities: [],
+                    enabled_abilities: [],
+                    role: role,
+                    courses: [],
+                };
+
+                try {
+                    // Save to database
+                    await couchDB.set("users", data);
+                    alert("Account created successfully!");
+
+                    // Redirect to login page
+                    location.href = "./login.html";
+                } catch (e) {
+                    console.error("Failed to create account:", e);
+                    alert("Failed to create account. Please try again.");
+                }
+            }
+        </script>
+    </body>
+</html>
