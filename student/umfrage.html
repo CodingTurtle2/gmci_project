@@ -263,16 +263,16 @@ function updateContent(old_page, page) {
 	if (page >= courseData.questions.length) {
 		getId("container1").style.display = "none";
 		getId("container2").style.display = "unset";
+		updateCourseAnswer(finalResult);
 		return;
 	}
 	
 	setUmfrage(page);
+	
+	getId("content").querySelector(".input").focus();
 }
 
 async function onEndEvent(elm) {
-	elm.onclick = () => {};
-	
-	await updateCourseAnswer(finalResult);
 	location.href = "./uebersicht.html?user=" + userData.name;
 }
 
