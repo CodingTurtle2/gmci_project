@@ -54,9 +54,27 @@ setUserData(couchDB);
 	</div>
 	-->
 	<div id="course-list"></div>
+	<button class="new" id="newButton" onclick="showCourseCreation()">+</button>
 </content>
 
 <style>
+button.new {
+	display: block;
+    margin: 20px auto;
+	font-size: 30px;
+	font-weight: bold;
+	border: none;
+	width: 60px;
+	height: 60px;
+	border-radius: 50%;
+	background-color: var(--accent_color_bg);
+	cursor: pointer;
+}
+
+button.new:hover {
+	background-color: var(--accent_color_bg_o);
+}
+
 button.auswertung {
 	font-size: 20px;
 	padding: 15px;
@@ -181,15 +199,35 @@ button.auswertung:hover {
 
 		<button class="action edit" onclick="showEditCourse('${courseId}')">
 			✎
-		</button>
+		</button> 
 		`;
 		courseList.appendChild(card);
 	}
 })();
 	
-
-function editCourse(courseId) {
-	showEditCourse(courseId);
+async function showCourseCreation() {
+	await couchDB.set("course:NewCourse", {
+		"title": "NewCourse",
+		"description": "",
+		"owner": userData,
+		"questions": [
+		],
+		"result": [
+		],
+		"result_history": [
+			{
+				"date": "2025-12-27",
+				"questions": [
+				],
+				"result": [
+				]
+			}
+		],
+		"start_date": "",
+		"expire_date": ""
+	});
+	userData.courses.push("NewCourse")
+	showEditCourse("NewCourse")
 }
 
 </script>
