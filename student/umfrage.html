@@ -5,113 +5,162 @@
 <script src="../lib/basic.js"></script>
 <script src="../other/skills.js"></script>
 <script src="../other/skilltree.js"></script>
-<head>
-	<meta charset="UTF-8">
-	<title>Beispielseite</title>
-	<style>
-			body {
-			font-family: Arial, sans-serif;
-			margin: 0;
-			padding: 0;
-			display: flex;
-			flex-direction: column;
-			min-height: 100vh;
-        }
-
-		.close-btn {
-			position:absolute;
-			top:20px;
-			left:20px;
-			font-size: 28px;
-			cursor: pointer;
-			font-weight: bold;
-		}
-		
-        header {
-			text-align: center;
-			padding-top: 120px;
-			padding-bottom: 40px;
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        main {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        /* Bewertungsskala */
-        .rating span {
-            font-size: 30px;
-            cursor: pointer;
-            padding: 5px;
-        }
-
-        /* Navigationspunkte */
-        .nav-dots {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 30px;
-        }
-
-        .nav-dots .active {
-            font-size: 45px;
-            font-weight: bold;
-        }
-
-        /* Weiter-Button */
-        .weiter-btn {
-            display: block;
-            width: 150px;
-            margin: 0 auto 30px auto;
-            padding: 10px;
-            font-size: 18px;
-            text-align: center;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .weiter-btn:hover {
-            background-color: #0056b3;
-        }
-	</style>
-</head>
-<Body>
-
-<div class="close-btn">X</div>
-
-<header>
-	Verstehen Sie den in der Vorlesung vorgetragenen Inhalt?
-</header>
-
-<main>
-
-	<div class="rating"> 
-		<span>1</span> 
-		<span>2</span> 
-		<span>3</span> 
-		<span>4</span> 
-		<span>5</span> 
-	</div>
 	
-	<textarea rows="5" cols="40" placeholder="Gib hier deinen Text ein..."></textarea>
-</main>
-<div class="nav-dots">
-	<span>&lt;</span>
-	<span class="active">•</span>
-	<span>•</span>
-	<span>•</span>
-	<span>&gt;</span>
+<Body>
+<div id="kurs"> 
 </div>
 
-<button class="weiter-btn">Weiter</button>
+<div id="frage"> 
+</div>
+
+<div id="antworttext"> 
+blablabla
+</div>
+
+<div id="weiterbutton"> 
+	<button onclick="goToNextScreen()">Weiter</button>
+</div>
+
+<div id="closebutton"> 
+	<button onclick="goToMainscreen()">X</button>
+</div>
 
 </body> 
+
+<style>
+	#closebutton{
+		position: fixed;
+		top: 10px;
+		left: 10px;
+	}
+	
+	#weiterbutton{
+		position: fixed;
+		bottom: 20%;
+		left: 50%;
+		transform: translateX(-50%);
+	}
+	#frage{
+		position: fixed;
+		top: 25%;
+		left: 50%;
+		transform: translateX(-50%);
+	}
+	#kurs{
+		position: fixed;
+		top: 5%;
+		left: 50%;
+		transform: translateX(-50%);
+	}
+	#antworttext{
+		position: fixed;
+		top: 40%;
+		left: 50%;
+		transform: translateX(-50%);
+		text-align: center;
+	}
+</style>
+
+<script>
+	const couchDB = new CouchDB();
+	//setUserData(couchDB).then(alert);
+	getId("frage").innerHTML=getURLArgsMap();
+	var seitenindex = 0;
+	var antworten = null;
+	var kurslaenge = 0;
+	
+	async function setData(position){
+		const kurs = await getCourse();
+		if(!kurs){
+			return null;
+		}
+		const kurslabel = getId("kurs");
+		const fragenlabel = getId("frage");
+		const aktuellefrage = kurs.questions[position];
+		
+		kurslabel.innerHTML = kurs.title;
+		fragenlabel.innerHTML = aktuellefrage.title;
+		
+		const antwortfeld = getId("antworttext");
+		if(aktuellefrage.type == "text"){
+			antwortfeld.innerHTML = `
+			<textarea class="input"></textarea>
+			`
+		}else if(aktuellefrage.type == "scala"){
+			antwortfeld.innerHTML = `
+			auf einer skala von 1 bis 5: <br>
+			<input type="range" min="1" max="5" class="input"></input>
+			`
+		}else if(aktuellefrage.type == "emoji"){
+			
+		}
+		
+		if(antworten == null){
+			kurslaenge = kurs.questions.length;
+			setUserData(couchDB).then(alert);
+			antworten = [];
+			for(var i = 0; i < kurs.questions.length; i++){
+				antworten.push(null);
+			}
+		}
+		
+		
+	}
+	setData(seitenindex);
+
+	async function getCourse(){
+		const args = getURLArgsMap();
+		const coursename = args.course;
+		if(!coursename){
+			return null;
+		}
+		const kurs = await couchDB.get("course:" + coursename);
+		if(!kurs){
+			return null;
+		}
+		return kurs;
+	}
+	
+	async function setCourseAnswer(answer) {
+		const args = getURLArgsMap();
+		const coursename = args.course;
+		if (!coursename) return null;
+		const kurs = await couchDB.get("course:" + coursename);
+		if (!kurs) return null;
+
+		kurs.result.push(answer);
+
+		await couchDB.set("course:" + coursename, kurs);
+
+		return kurs;
+	}
+	
+	function goToMainscreen(){
+		location.href = "./uebersicht.html?user="+ userData.name;
+	}
+	
+	async function goToNextScreen(){
+		const antwortfeld = getId("antworttext");
+		const wert = antwortfeld.querySelector(".input").value;
+		const isTextField = wert.tagName == "TEXTAREA";
+		if(isTextField){
+			antworten[seitenindex] = wert;
+		}else{
+			antworten[seitenindex] = parseInt(wert);
+		}
+		seitenindex++;
+		if(seitenindex == kurslaenge){
+			setCourseAnswer(antworten);
+			//bitte hier den link zu der zusammenfassung einrichten
+			//location.href = "./uebersicht.html?user="+ userData.name;
+			return
+		}
+		
+		setData(seitenindex);
+	}
+	
+	
+	
+</script>
+
 </html>
