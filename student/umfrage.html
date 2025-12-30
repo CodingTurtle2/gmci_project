@@ -1,166 +1,295 @@
-<!DOCTYPE html>
-<html lang=de>
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="../lib/basic.css">
 <script src="../auth.js"></script>
 <script src="../lib/basic.js"></script>
 <script src="../other/skills.js"></script>
 <script src="../other/skilltree.js"></script>
-	
-<Body>
-<div id="kurs"> 
-</div>
-
-<div id="frage"> 
-</div>
-
-<div id="antworttext"> 
-
-</div>
-
-<div id="weiterbutton"> 
-	<button onclick="goToNextScreen()">Weiter</button>
-</div>
-
-<div id="closebutton"> 
-	<button onclick="goToMainscreen()">X</button>
-</div>
-
-</body> 
-
+<title>Umfrage</title>
+</head>
+<body>
 <style>
-	#closebutton{
-		position: fixed;
-		top: 10px;
-		left: 10px;
-	}
-	
-	#weiterbutton{
-		position: fixed;
-		bottom: 20%;
-		left: 50%;
-		transform: translateX(-50%);
-	}
-	#frage{
-		position: fixed;
-		top: 25%;
-		left: 50%;
-		transform: translateX(-50%);
-	}
-	#kurs{
-		position: fixed;
-		top: 5%;
-		left: 50%;
-		transform: translateX(-50%);
-	}
-	#antworttext{
-		position: fixed;
-		top: 40%;
-		left: 50%;
-		transform: translateX(-50%);
-		text-align: center;
-	}
+
+.main-container {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	height: 94%;
+	width: 94%;
+	max-width: 700px;
+	box-shadow: var(--def-shadow);
+	border-radius: var(--border-radius);
+	background-color: var(--accent_color_bg_o2);
+	text-align: center;
+	padding: 15px;
+}
+
+.bttn-close {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	width: 50px;
+	height: 50px;
+	font-size: 20px;
+	font-weight: bold;
+	border-radius: var(--border-radius);
+	border: 1px solid black;
+	background: var(--accent_color_bg);
+}
+.bttn-close:hover {
+	box-shadow: var(--reversed_def_shadow);
+}
+
+#content {
+	display: flex;
+	width: 100%;
+	flex-direction: column;
+}
+#content > div:first-child {
+	background-color: rgba(255, 255, 255, 0.7);
+	border-radius: var(--border-radius);
+	padding: 30px 10px;
+	/*min-height: 120px;*/
+	font-size: 22px;
+	font-weight: bold;
+	margin-bottom: 40px;
+	width: 100%;
+}
+#content > div:nth-child(2) {
+	display: inline-block;
+	min-height: 200px;
+}
+#content > div:nth-child(2) > textarea {
+	width: 100%;
+	resize: none;
+	border-radius: var(--border-radius);
+	border: none;
+	background-color: rgba(255, 255, 255, 0.7);
+	padding: 20px;
+	min-height: 200px;
+	font-size: 16px;
+}
+#content > div:nth-child(2) > input {
+	width: 50%;
+	margin-top: 50px;
+}
+#content > .weiter-btn {
+	position: absolute;
+	text-align: center;
+	bottom: 80px;
+	left: 50%;
+	font-size: 20px;
+	transform: translateX(-50%);
+	border-radius: var(--border-radius);
+}
+#content > div:last-child {
+	position: absolute;
+	width: 100%;
+	text-align: center;
+	bottom: 20px;
+	left: 0;
+}
+
+.weiter-btn {
+	display: inline-block;
+	min-width: 150px;
+	padding: 10px;
+	font-size: 18px;
+	text-align: center;
+	background-color: #007bff;
+	color: white;
+	border: none;
+	border-radius: 5px;
+}
+.weiter-btn:hover {
+	background-color: #0056b3;
+}
+
+.end-dialog {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 100%;
+	transform: translate(-50%, -50%);
+	text-align: center;
+}
+
 </style>
 
+<div class="main-container" id="container1">
+
+<button class="bttn-close" onclick='close_page()'>X</button>
+<div style="height: 60px;"></div>
+<div id="content"></div>
+</div>
+
+<div class="main-container"  id="container2" style="display: none;">
+	<div class="end-dialog">
+		<h2>Vielen Dank für deine Teilnahme!</h2><br>
+		<button class="weiter-btn" onclick="onEndEvent(this)">
+			Zurück zur Hauptseite
+		</button>
+	</div>
+</div>
+
 <script>
-	const couchDB = new CouchDB();
-	//setUserData(couchDB).then(alert);
-	getId("frage").innerHTML=getURLArgsMap();
-	var seitenindex = 0;
-	var antworten = null;
-	var kurslaenge = 0;
-	
-	async function setData(position){
-		const kurs = await getCourse();
-		if(!kurs){
-			return null;
-		}
-		const kurslabel = getId("kurs");
-		const fragenlabel = getId("frage");
-		const aktuellefrage = kurs.questions[position];
-		
-		kurslabel.innerHTML = kurs.title;
-		fragenlabel.innerHTML = aktuellefrage.title;
-		
-		const antwortfeld = getId("antworttext");
-		if(aktuellefrage.type == "text"){
-			antwortfeld.innerHTML = `
-			<textarea class="input"></textarea>
-			`
-		}else if(aktuellefrage.type == "scala"){
-			antwortfeld.innerHTML = `
-			auf einer skala von 1 bis 5: <br>
-			<input type="range" min="1" max="5" class="input"></input>
-			`
-		}else if(aktuellefrage.type == "emoji"){
-			
-		}
-		
-		if(antworten == null){
-			kurslaenge = kurs.questions.length;
-			setUserData(couchDB).then(alert);
-			antworten = [];
-			for(var i = 0; i < kurs.questions.length; i++){
-				antworten.push(null);
-			}
-		}
-		
-		
-	}
-	setData(seitenindex);
 
-	async function getCourse(){
-		const args = getURLArgsMap();
-		const coursename = args.course;
-		if(!coursename){
-			return null;
-		}
-		const kurs = await couchDB.get("course:" + coursename);
-		if(!kurs){
-			return null;
-		}
-		return kurs;
-	}
+const couchDB = new CouchDB();
+var courseData = null;
+async function setCourse() {
+	const args = getURLArgsMap();
+	const coursename = args.course;
+	if (!coursename) return false;
+	const kurs = await couchDB.get("course:" + coursename);
+	if (!kurs) return false;
+	courseData = kurs;
 	
-	async function setCourseAnswer(answer) {
-		const args = getURLArgsMap();
-		const coursename = args.course;
-		if (!coursename) return null;
-		const kurs = await couchDB.get("course:" + coursename);
-		if (!kurs) return null;
+	return true;
+}
+async function updateCourseAnswer(answer) {
+	const args = getURLArgsMap();
+	const coursename = args.course;
+	if (!coursename) return null;
+	const kurs = await couchDB.get("course:" + coursename);
+	if (!kurs) return null;
+	kurs.result.push(answer);
+	await couchDB.set("course:" + coursename, kurs);
+	return kurs;
+}
+function close_page() {
+	location.href = "./uebersicht.html?user=" + userData.name;
+}
 
-		kurs.result.push(answer);
-
-		await couchDB.set("course:" + coursename, kurs);
-
-		return kurs;
-	}
+function createNavBar(pos) {
+	const div = document.createElement("div");
+	div.style = `
+width: 100%;
+text-align: center;
+display: flex;
+font-size: 30px;
+font-weight: bold;
+align-items: middle;
+justify-content: center;
+flex-direction: row;
+	`;
 	
-	function goToMainscreen(){
-		location.href = "./uebersicht.html?user="+ userData.name;
+	const prevPage = document.createElement("label");
+	prevPage.innerHTML = "&nbsp;&lt;&nbsp;";
+	if (pos-1 >= 0) {
+		prevPage.addEventListener("click", () => updateContent(pos, pos-1));
+	} else {
+		prevPage.style.opacity = "0.4";
 	}
+	prevPage.style.marginTop = "3px";
+	div.appendChild(prevPage);
 	
-	async function goToNextScreen(){
-		const antwortfeld = getId("antworttext");
-		const wert = antwortfeld.querySelector(".input").value;
-		const isTextField = wert.tagName == "TEXTAREA";
-		if(isTextField){
-			antworten[seitenindex] = wert;
-		}else{
-			antworten[seitenindex] = parseInt(wert);
-		}
-		seitenindex++;
-		if(seitenindex == kurslaenge){
-			setCourseAnswer(antworten);
-			//bitte hier den link zu der zusammenfassung einrichten
-			//location.href = "./uebersicht.html?user="+ userData.name;
-			return
-		}
+	for (var i = 0; i < courseData.questions.length; i++) {
+		const isSel = i == pos;
+		const divI = document.createElement("div");
+		divI.style = `
+display: inline-block;
+padding-left: 10px;
+padding-right: 10px;
+text-align: center;
+		`;
+		divI.innerHTML = `
+<label style="border-radius: 50%; display: inline-block; width: 15px; height: 15px; background: ${isSel ? "none": "black"}; border: 2px solid black;"></label>
+		`;
 		
-		setData(seitenindex);
+		if (!isSel) {
+			const pos2 = i;
+			divI.addEventListener("click", () => updateContent(pos, pos2));
+		}
+		div.appendChild(divI);
 	}
 	
+	const nextPage = document.createElement("label");
+	nextPage.innerHTML = "&nbsp;&gt;&nbsp;";
+	if (pos+1 < courseData.questions.length) {
+		nextPage.addEventListener("click", () => updateContent(pos, pos+1));
+	} else {
+		nextPage.style.opacity = "0.4";
+	}
+	nextPage.style.marginTop = "3px";
+	div.appendChild(nextPage);
 	
+	return div;
+}
+
+function setUmfrage(position = 0) {
+	const elm = getId("content");
 	
+	const data = courseData.questions[position];
+	
+	var input;
+	if (data.type == "scala") {
+		input = `Schlecht&nbsp;<input class="input" data="scala" type="range" min="1" max="5">&nbsp;Gut`;
+	} else {
+		input = `<textarea class="input" data="text" placeholder="Text hier eingeben..."></textarea>`;
+	}
+	
+	elm.innerHTML = `
+<div>${data.title}</div>
+<div>${input}</div>
+<button class="weiter-btn" onclick="updateContent(${position}, ${position+1})">${
+	position == courseData.questions.length-1 ? "Umfrage beenden": "Weiter"
+}</button>
+	`;
+	
+	elm.appendChild(createNavBar(position));
+}
+
+
+var finalResult = null;
+function updateContent(old_page, page) {
+	if (page < 0) page = 0;
+	
+	const inp = getId("content").querySelector(".input");
+	const type = inp.getAttribute("data");
+	if (type == "scala") {
+		try {
+			finalResult[old_page] = parseInt(inp.value);
+		} catch(err) {
+			console.error(err);
+		}
+	} else {
+		finalResult[old_page] = inp.value;
+	}
+	
+	if (page >= courseData.questions.length) {
+		getId("container1").style.display = "none";
+		getId("container2").style.display = "unset";
+		return;
+	}
+	
+	setUmfrage(page);
+}
+
+async function onEndEvent(elm) {
+	elm.onclick = () => {};
+	
+	await updateCourseAnswer(finalResult);
+	location.href = "./uebersicht.html?user=" + userData.name;
+}
+
+(async () => {
+	await setUserData(couchDB);
+	if (!(await setCourse())) {
+		console.error("No course defined");
+		return;
+	}
+	
+	finalResult = [];
+	for (var i in courseData.questions) finalResult.push(null);
+	
+	setUmfrage();
+})();
+
 </script>
+</body>
 
 </html>
