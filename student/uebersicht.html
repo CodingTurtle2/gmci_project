@@ -1,25 +1,139 @@
 <!doctype html>
-<html>	
+<html>
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="../lib/basic.css">
-<script src="../auth.js"></script>
-<script src="../lib/basic.js"></script>
-<script src="./uebersicht_overlay.js"></script>
-<script src="../other/skills.js"></script>
-<script src="../other/skilltree.js"></script>
-<title>Übersicht</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../lib/basic.css">
+  <script src="../auth.js"></script>
+  <script src="../lib/basic.js"></script>
+  <script src="./uebersicht_overlay.js"></script>
+  <script src="../other/skills.js"></script>
+  <script src="../other/skilltree.js"></script>
+  <title>Übersicht</title>
 </head>
+
 <body>
+  <div class="header_bar_1">
+    <div style="font-weight: bold;">
+      Meine Kurse
+    </div>
+    <div>
+      <button class="auswertung" onclick='location.href = "./auswertung.html?user=" + userData.name'>
+        Auswertungen
+      </button>
+    </div>
+    <div>
+      <button class="profile" onclick='showOverlay("miniProfile")'>
+        <overlay id="miniProfile" />
+      </button>
+    </div>
+  </div>
+  <div class="header_bar_1_placeholder"></div>
+
+  <button onclick="participateInSurvey()">Participate in Survey</button>
+
+  <div id="courses-container">
+    <h2>Courses</h2>
+
+    <div id="courses-list" style="height: 300px; overflow-y: scroll; border: 1px solid black;">
+      <div class="course-item" onclick="selectCourse('Mathematics')">
+        <span>Mathematics</span>
+        <button onclick="removeCourse('Mathematics')">del</button>
+      </div>
+      <div class="course-item" onclick="selectCourse('German')">
+        <span>German</span>
+        <button onclick="removeCourse('German')">del</button>
+      </div>
+      <div class="course-item" onclick="selectCourse('English')">
+        <span>English</span>
+        <button onclick="removeCourse('English')">del</button>
+      </div>
+    </div>
+
+    <button onclick="newCourse()">+</button>
+  </div>
+
+  <div id="level-display">
+    <div>Level <span id="level-number">5</span></div>
+    <progress id="level-bar" value="70" max="100"></progress>
+  </div>
+
+  <!-- Overlays -->
+  <overlay id="survey">
+    <div>
+      <span>Gib den Code der Umfrage ein</span>
+      <input type="text" placeholder="****">
+      <button>Teilnehmen</button>
+    </div>
+  </overlay>
+
+  <overlay id="course">
+    <div>
+      <span>Kurs SWT</span>
+      <span>Prof. Dr. Kurt Schneider</span>
+      <br>
+      <span>Termine</span>
+      <div id="courses-list" style="height: 200px; overflow-y: scroll; border: 1px solid black;">
+        <span>Di 01.01.2023, 13:00 - 15:00 Uhr</span>
+        <br>
+        <span>Raum 023, Gebäude 2323</span>
+      </div>
+      <span>Bewertungen</span>
+      <div id="courses-list" style="height: 200px; overflow-y: scroll; border: 1px solid black;">
+        <div>Di, 01.01.2023</div>
+        <div>Di, 01.01.2023</div>
+        <div>Di, 01.01.2023</div>
+
+      </div>
+
+    </div>
+  </overlay>
 
 
-<script>
+  <script>
 
-const couchDB = new CouchDB();
-setUserData(couchDB).then((val) => {
-});
+    const couchDB = new CouchDB();
+    setUserData(couchDB).then((val) => {
+    });
 
-</script>
+    function participateInSurvey() {
+      showOverlay("survey");
+    }
+
+    function selectCourse(courseName) {
+      console.log("Course selected:", courseName);
+      showOverlay("course");
+    }
+
+    function removeCourse(courseName) {
+      console.log("remove called for course:", courseName);
+    }
+
+    function newCourse() {
+      console.log("New course button pressed");
+    }
+
+    function setLevelProgress(percent) {
+      document.getElementById('level-bar').value = percent;
+    }
+
+    function setLevel(level) {
+      document.getElementById('level-number').textContent = level;
+    }
+
+    function addCourseToList(courseName) {
+      const coursesList = document.getElementById('courses-list');
+      const courseDiv = document.createElement('div');
+      courseDiv.className = 'course-item';
+      courseDiv.innerHTML = `
+                <span>${courseName}</span>
+                <button onclick="editCourse('${courseName}')">Edit</button>
+            `;
+      coursesList.appendChild(courseDiv);
+    }
+
+  </script>
 </body>
+
 </html>
