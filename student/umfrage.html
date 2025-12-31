@@ -228,9 +228,9 @@ function setUmfrage(position = 0) {
 	
 	var input;
 	if (data.type == "scala") {
-		input = `Schlecht&nbsp;<input class="input" data="scala" type="range" min="1" max="5">&nbsp;Gut`;
+		input = `Schlecht&nbsp;<input class="input" data="scala" type="range" min="1" max="5" autofocus>&nbsp;Gut`;
 	} else {
-		input = `<textarea class="input" data="text" placeholder="Text hier eingeben..."></textarea>`;
+		input = `<textarea class="input" data="text" placeholder="Text hier eingeben..." autofocus></textarea>`;
 	}
 	
 	elm.innerHTML = `

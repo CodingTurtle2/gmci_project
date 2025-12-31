@@ -107,6 +107,9 @@ overlay {
 	font-size: 20px;
 	font-weight: 600;
 }
+.overlay > div:last-child > .close:hover {
+	box-shadow: var(--reversed_def_shadow);
+}
 
 .overlay .overlay_title {
 	height: 40px;
