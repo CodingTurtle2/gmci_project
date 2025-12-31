@@ -3,12 +3,11 @@ async function createTemp() {
 	await couchDB.set("users", {
 		"turtle": {
 			"password": "1234",
-			"level": 1,
+			"level": 0,
+			"xp": 0,
 			"avatar": null,
-			"abilities": [
-			],
-			"enabled_abilities": [
-			],
+			"abilities": [],
+			"enabled_abilities": [],
 			"role": "student",
 			"courses": [
 				"weiche_ware",
@@ -17,8 +16,9 @@ async function createTemp() {
 		},
 		"dumble-door": {
 			"password": "bla",
-			"level": 4,
-			"avatar": "https://static.turtle-coding-gbr.de/profile-pic.png",
+			"level": 10,
+			"xp": 0,
+			"avatar": "https://static.turtle-coding-gbr.de/gmci/profile-pic.png",
 			"abilities": [
 			],
 			"enabled_abilities": [
@@ -30,9 +30,18 @@ async function createTemp() {
 		},
 		"narrator": {
 			"password": "stanley",
-			"level": 4,
-			"avatar": "https://static.turtle-coding-gbr.de/st",
+			"level": 10,
+			"xp": 0,
+			"avatar": "https://static.turtle-coding-gbr.de/gmci/st",
 			"abilities": [
+				"dark_mode",
+				"accent_color",
+				"pink_mode",
+				"profile_pic",
+				"simple_border",
+				"gold_border",
+				"epic_border",
+				"title_of_honor"
 			],
 			"enabled_abilities": [
 			],
@@ -72,17 +81,17 @@ async function createTemp() {
 			{
 				"date": "2025-12-27",
 				"questions": [
-					{ "title": "1", "type": "text" },
-					{ "title": "2", "type": "scala" }
+					{ "title": "Wie war die Vorlesung?", "type": "text" },
+					{ "title": "Wie war der Professor?", "type": "scala" }
 				],
 				"result": [
-					["Gut, aber ...", 5],
-					["Schlecht", 1]
+					["Gut, weil ...", 5],
+					["Schlecht, weil ...", 1]
 				]
 			}
 		],
 		"start_date": "2025-12-23",
-		"expire_date": "2025-12-27"
+		"expire_date": "2026-02-20"
 	});
 	await couchDB.set("course:weiche_ware", {
 		"title": "Weiche Ware",
@@ -99,8 +108,8 @@ async function createTemp() {
 			}
 		],
 		"result": [
-			["Gut, aber ...", 5],
-			["Schlecht", 1]
+			["Gut, weil ...", 5],
+			["Schlecht, weil ...", 1]
 		],
 		"result_history": [
 			{
@@ -110,12 +119,12 @@ async function createTemp() {
 					{ "title": "2", "type": "scala" }
 				],
 				"result": [
-					["Gut, aber ...", 5],
-					["Schlecht", 1]
+					["Gut, weil ...", 5],
+					["Schlecht, weil ...", 1]
 				]
 			}
 		],
 		"start_date": "2025-12-23",
-		"expire_date": "2025-12-27"
+		"expire_date": "2025-02-20"
 	});
 }

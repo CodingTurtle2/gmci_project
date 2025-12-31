@@ -108,8 +108,13 @@ const _skillCb = {
 	},
 	"unset_epic_border": () => unsetProfileBorder(),
 	"title_of_honor": function() {},
-	"profile_pic": () => updateAllProfiles(userData)
+	"profile_pic": () => updateEverything()
 };
+
+function updateEverything() {
+	updateAllProfiles(userData);
+	refreshOverlays();
+}
 
 function chooseAccentColor() {
 	var elm = getId("skill_chooseAccentColor");
@@ -142,7 +147,7 @@ function setAccentColor(elm) {
 	
 	hideOverlay("skill_chooseAccentColor");
 	_skillCb.accent_color();
-	refreshOverlays();
+	updateEverything()
 }
 
 

@@ -103,7 +103,7 @@
 	background-color: #007bff;
 	color: white;
 	border: none;
-	border-radius: 5px;
+	border-radius: var(--border-radius);
 }
 .weiter-btn:hover {
 	background-color: #0056b3;
@@ -130,6 +130,7 @@
 <div class="main-container"  id="container2" style="display: none;">
 	<div class="end-dialog">
 		<h2>Vielen Dank für deine Teilnahme!</h2><br>
+		<h3 id="level_up" style="display: none;">Level up!<br><br><br></h3>
 		<button class="weiter-btn" onclick="onEndEvent(this)">
 			Zurück zur Hauptseite
 		</button>
@@ -263,7 +264,7 @@ function updateContent(old_page, page) {
 	if (page >= courseData.questions.length) {
 		getId("container1").style.display = "none";
 		getId("container2").style.display = "unset";
-		updateCourseAnswer(finalResult);
+		onFinishEva();
 		return;
 	}
 	
@@ -272,7 +273,15 @@ function updateContent(old_page, page) {
 	getId("content").querySelector(".input").focus();
 }
 
-async function onEndEvent(elm) {
+async function onFinishEva() {
+	await playLevelSound();
+	await updateCourseAnswer(finalResult);
+	if (await levelUpXP(couchDB)) {
+		const lvlElm = getId("level_up");
+		if (lvlElm) lvlElm.style.display = "unset";
+	}
+}
+async function onEndEvent() {
 	location.href = "./uebersicht.html?user=" + userData.name;
 }
 
@@ -280,6 +289,18 @@ async function onEndEvent(elm) {
 	await setUserData(couchDB);
 	if (!(await setCourse())) {
 		console.error("No course defined");
+		return;
+	}
+	
+	if (!courseData.expire_date) {
+		console.error("courseData.expire_date is null");
+		return;
+	}
+	
+	const expire_date = new Date(courseData.expire_date);
+	
+	if (courseData.questions.length == 0 || expire_date < new Date()) {
+		onEndEvent();
 		return;
 	}
 	

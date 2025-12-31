@@ -1,160 +1,154 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Login</title>
-        <link rel="stylesheet" href="./lib/basic.css" />
-        <script src="./auth.js" defer></script>
-        <script src="./lib/basic.js" defer></script>
-        <style>
-            * {
-                box-sizing: border-box;
-                margin: 0;
-                padding: 0;
-                font-family: Arial, sans-serif;
-            }
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Login</title>
+<link rel="stylesheet" href="./lib/basic.css" />
+<script src="./auth.js"></script>
+<script src="./lib/basic.js"></script>
+<style>
+	* {
+		box-sizing: border-box;
+		margin: 0;
+		padding: 0;
+		font-family: Arial, sans-serif;
+	}
 
-            body {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-                background-color: #f6f8fa;
-            }
+	body {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 100vh;
+		background-color: #f6f8fa;
+	}
 
-            .login-card {
-                background-color: #fff;
-                padding: 2.5rem 2rem;
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                width: 100%;
-                max-width: 400px;
-            }
+	.login-card {
+		background-color: #fff;
+		padding: 2.5rem 2rem;
+		border-radius: 8px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		width: 100%;
+		max-width: 400px;
+	}
 
-            .login-card h1 {
-                text-align: center;
-                margin-bottom: 1.5rem;
-                font-size: 1.5rem;
-            }
+	.login-card h1 {
+		text-align: center;
+		margin-bottom: 1.5rem;
+		font-size: 1.5rem;
+	}
 
-            label {
-                display: block;
-                margin-bottom: 0.3rem;
-                font-weight: 600;
-                font-size: 0.9rem;
-            }
+	label {
+		display: block;
+		margin-bottom: 0.3rem;
+		font-weight: 600;
+		font-size: 0.9rem;
+	}
 
-            input {
-                width: 100%;
-                padding: 0.5rem 0.75rem;
-                margin-bottom: 1rem;
-                border: 1px solid #d1d5da;
-                border-radius: 6px;
-                font-size: 1rem;
-            }
+	input {
+		width: 100%;
+		padding: 0.5rem 0.75rem;
+		margin-bottom: 1rem;
+		border: 1px solid #d1d5da;
+		border-radius: 6px;
+		font-size: 1rem;
+	}
 
-            button {
-                width: 100%;
-                padding: 0.6rem;
-                background-color: #2ea44f;
-                color: #fff;
-                border: none;
-                border-radius: 6px;
-                font-size: 1rem;
-                font-weight: 600;
-                cursor: pointer;
-            }
+	button {
+		width: 100%;
+		padding: 0.6rem;
+		background-color: var(--accent_color_fg);
+		color: #fff;
+		border: none;
+		border-radius: 6px;
+		font-size: 1rem;
+		font-weight: 600;
+		cursor: pointer;
+	}
 
-            button:hover {
-                background-color: #279f43;
-            }
+	button:hover {
+		background-color: var(--accent_color_fg_o);
+	}
 
-            .signup-text {
-                text-align: center;
-                margin-top: 1rem;
-                font-size: 0.9rem;
-            }
+	.signup-text {
+		text-align: center;
+		margin-top: 1rem;
+		font-size: 0.9rem;
+	}
 
-            .signup-text a {
-                color: #0366d6;
-                text-decoration: none;
-            }
+	.signup-text a {
+		color: #0366d6;
+		text-decoration: none;
+	}
 
-            .signup-text a:hover {
-                text-decoration: underline;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="login-card">
-            <h1>Sign in</h1>
+	.signup-text a:hover {
+		text-decoration: underline;
+	}
+</style>
+</head>
+<body>
+<div class="login-card">
+	<h1>Sign in</h1>
 
-            <label for="username">Username</label>
-            <input
-                type="text"
-                id="username"
-                name="username"
-                autocomplete="username"
-                autocapitalize="off"
-                autocorrect="off"
-                required
-                autofocus
-            />
+	<label for="username">Username</label>
+	<input
+		type="text"
+		id="username"
+		name="username"
+		autocomplete="username"
+		autocapitalize="off"
+		autocorrect="off"
+		required
+		autofocus
+	/>
 
-            <label for="password">Password</label>
-            <input
-                type="password"
-                id="password"
-                name="password"
-                autocomplete="current-password"
-                required
-            />
+	<label for="password">Password</label>
+	<input
+		type="password"
+		id="password"
+		name="password"
+		autocomplete="current-password"
+		required
+	/>
 
-            <button type="button" onclick="login()">Sign in</button>
+	<button type="button" onclick="login()">Sign in</button>
 
-            <div class="signup-text">
-                Don't have an account yet? <a href="signup.html">Sign up</a>
-            </div>
-        </div>
+	<div class="signup-text">Don't have an account yet? <a href="signup.html">Sign up</a></div>
+</div>
 
-        <script>
-            const couchDB = new CouchDB();
+<script>
+const couchDB = new CouchDB();
 
-            async function getData() {
-                try {
-                    const res = await couchDB.get("users");
-                    return res || {};
-                } catch (e) {
-                    console.error("Failed to get users:", e);
-                    return {};
-                }
-            }
+async function getData() {
+	try {
+		const res = await couchDB.get("users");
+		return res ?? {};
+	} catch (e) {
+		console.error("Failed to get users:", e);
+		return {};
+	}
+}
 
-            async function login() {
-                const data = await getData();
-                const username = document
-                    .getElementById("username")
-                    .value.trim()
-                    .toLowerCase();
-                const password = document.getElementById("password").value;
+async function login() {
+	const data = await getData();
+	const username = document.getElementById("username").value.trim().toLowerCase();
+	const password = document.getElementById("password").value;
 
-                const user = data[username];
-                if (user == undefined) {
-                    return alert("User doesn't exist!");
-                }
-                if (user.password != password) {
-                    return alert("Incorrect password!");
-                }
-                if (user.role === "student") {
-                    location.href =
-                        "./student/uebersicht.html?user=" + username;
-                    return;
-                } else {
-                    location.href = "./prof/uebersicht.html?user=" + username;
-                    return;
-                }
-            }
-        </script>
-    </body>
+	const user = data[username];
+	if (user == undefined) {
+		return alert("User doesn't exist!");
+	}
+	if (user.password != password) {
+		return alert("Incorrect password!");
+	}
+	if (user.role === "student") {
+		location.href = "./student/uebersicht.html?user=" + username;
+		return;
+	} else {
+		location.href = "./prof/uebersicht.html?user=" + username;
+		return;
+	}
+}
+</script>
+</body>
 </html>

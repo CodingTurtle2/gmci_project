@@ -140,7 +140,7 @@ async function activateSkill(elm, data) {
 			try { eval(data.call_unset); } catch (err) { console.error(err); }
 		}
 	}
-	refreshOverlays();
+	updateEverything();
 }
 async function _buySkill(data) {
 	const elms = document.getElementsByClassName("skill_" + data.id);
