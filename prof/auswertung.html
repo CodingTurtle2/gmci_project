@@ -223,8 +223,7 @@ function _createElement1(course, data, name, pos = -1) {
 		bttn = `<button onclick='getXpPoints(this, 1, "${name}", ${pos})'>1 XP abholen</button>`;
 	}
 
-	const expire_date = new Date(data.date);
-	if ((data["got_xp"] ??= false) || expire_date > new Date()) {
+	if ((data["got_xp"] ??= false) || pos == -1) {
 		bttn = '';
 	}
 	
@@ -265,7 +264,14 @@ async function getXpPoints(elm, xp, name, pos) {
 	elm.remove();
 	const course = await couchDB.get("course:" + name);
 	
-	const data = course.result_history[pos];
+	const history = course.result_history ??= [];
+	
+	const data = history[pos];
+	if (data == null) {
+		console.error(`data is null at course ${name} history=${pos}`);
+		return;
+	}
+	
 	data["got_xp"] = true;
 	
 	if (await levelUpXP(couchDB, userData, xp)) {
