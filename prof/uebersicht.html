@@ -15,7 +15,7 @@ setUserData(couchDB);
 <title>Übersicht</title>
 </head>
 <body>
-	<div class="header_bar_1">
+<div class="header_bar_1">
 	<div style="font-weight: bold;">
 		Meine Kurse
 	</div>
@@ -95,7 +95,7 @@ button.auswertung:hover {
 
 .course-card {
 	position: relative;
-	width: 100%;
+	width: 80%;
 	min-height: 300px;
 	padding: 16px;
 	background: var(--accent_color_bg_o);
@@ -184,6 +184,7 @@ button.auswertung:hover {
 	display: flex;
 	flex-direction: column;
 	gap: 15px;
+	align-items: center;
 }
 
 .createCourse {
@@ -268,7 +269,7 @@ async function setCourseView() {
 
 		const card = document.createElement("div");
 		card.className = "course-card";
-
+		
 		card.innerHTML = `
 		<div class="course-title">${course.title}</div>
 
@@ -276,7 +277,7 @@ async function setCourseView() {
 			${course.description}
 		</div>
 
-		<button class="action start" onclick='location.href = "./kursAnzeige.html?course=" + "${courseId}"'>
+		<button class="action start" onclick='location.href = "./kursAnzeige.html?user=${userData.name},course=${courseId}";'>
 			Umfrage Starten
 		</button>
 

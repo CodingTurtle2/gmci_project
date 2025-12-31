@@ -45,14 +45,14 @@ setUserData(couchDB);
 
 
 <script>
-    const params = new URLSearchParams(window.location.search);
-    const courseId = params.get("course"); 
+	const params = getURLArgsMap();
+	const courseId = params["course"]; 
 
-    if (!courseId) {
-			console.error("Keine courseId in der URL");
+	if (!courseId) {
+		console.error("Keine courseId in der URL");
 	}
 
-    const qrCodeUrl = `${window.location.origin}/student/umfrage?course=${courseId}`;
+    const qrCodeUrl = `${window.location.origin}/student/umfrage.html?course=${courseId}`;
 
     new QRCode(document.getElementById("qrCode"), {
         text: qrCodeUrl,
@@ -64,13 +64,12 @@ setUserData(couchDB);
 	accesCodeElem.innerText = "Code: " + courseId;
 
 	async function AnsichtZeigen() {
-
 		const liveButton = document.getElementById("liveButton")
 		liveButton.style.display = "none";
 
 		const questionList = document.getElementById("questionCards");
 
-		const courseInfo = await couchDB.get("course:" + courseId)
+		const courseInfo = await couchDB.get("course:" + courseId);
 		let index = 0;
 		for(const question of courseInfo.questions) {
 			const overlayId = `qOver${index}`

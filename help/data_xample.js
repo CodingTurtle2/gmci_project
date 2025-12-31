@@ -25,7 +25,7 @@ async function createTemp() {
 			],
 			"role": "professor",
 			"courses": [
-				"weiche_ware"
+				"weiche_ware", "algebra", "geometrie"
 			]
 		},
 		"narrator": {
@@ -47,7 +47,7 @@ async function createTemp() {
 			],
 			"role": "professor",
 			"courses": [
-				"bucket"
+				"bucket", "statistik"
 			]
 		}
 	});
@@ -125,6 +125,12 @@ async function createTemp() {
 			}
 		],
 		"start_date": "2025-12-23",
-		"expire_date": "2025-02-20"
+		"expire_date": "2026-02-20"
 	});
+	
+	
+	await couchDB.set("course:algebra", { "title": "Algebra", "description": "Grundlagen der algebraischen Konzepte.", "owner": "math-wizard", "questions": [ { "title": "Wie gut verstehen Sie die Grundlagen der Algebra?", "type": "text" }, { "title": "Bewerten Sie die Schwierigkeit algebraischer Aufgaben.", "type": "scala" } ], "result": [ ["Einfach, weil ...", 5], ["Schwierig, weil ...", 1] ], "result_history": [ { "date": "2025-12-28", "questions": [ { "title": "1", "type": "text" }, { "title": "2", "type": "scala" } ], "result": [ ["Einfach, weil ...", 5], ["Schwierig, weil ...", 1] ] } ], "start_date": "2025-12-26", "expire_date": "2025-02-25" });
+	await couchDB.set("course:geometrie", { "title": "Geometrie", "description": "Erforschung geometrischer Figuren und Konzepte.", "owner": "geo-genius", "questions": [ { "title": "Wie sicher sind Sie im Umgang mit geometrischen Formen?", "type": "text" }, { "title": "Bewerten Sie die Komplexität geometrischer Aufgaben.", "type": "scala" } ], "result": [ ["Einfach, weil ...", 5], ["Schwierig, weil ...", 1] ], "result_history": [ { "date": "2025-12-29", "questions": [ { "title": "1", "type": "text" }, { "title": "2", "type": "scala" } ], "result": [ ["Einfach, weil ...", 5], ["Schwierig, weil ...", 1] ] } ], "start_date": "2025-12-24", "expire_date": "2025-03-15" });
+	await couchDB.set("course:statistik", { "title": "Statistik", "description": "Grundlagen der statistischen Analyse und Interpretation.", "owner": "data-analyst", "questions": [ { "title": "Wie gut verstehen Sie statistische Methoden?", "type": "text" }, { "title": "Bewerten Sie die Schwierigkeit statistischer Analysen.", "type": "scala" } ], "result": [ ["Einfach, weil ...", 5], ["Schwierig, weil ...", 1] ], "result_history": [ { "date": "2025-12-30", "questions": [ { "title": "1", "type": "text" }, { "title": "2", "type": "scala" } ], "result": [ ["Einfach, weil ...", 5], ["Schwierig, weil ...", 1] ] } ], "start_date": "2025-12-25", "expire_date": "2025-04-10" });
+
 }

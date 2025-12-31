@@ -134,6 +134,7 @@ overlay {
 	align-items: center;
 	display: flex;
 	flex-direction: row;
+	z-index: 1;
 }
 .header_bar_1 > div {
 	display: table-cell;
