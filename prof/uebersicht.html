@@ -35,26 +35,23 @@ setUserData(couchDB);
 <div class="header_bar_1_placeholder"></div>
 
 <content>
-	<!-- 
-	<div class="course-card">
-		<div class="course-title">
-			HCI
-		</div>
-		<div class="course-description">
-			hier lernt man sehr viel 
-		</div>
-		<div>
-			<button class="action start">
-				Umfrage Starten
-			</button>
-			<button class="action edit">
-				✎
-			</button>
-		</div>
-	</div>
-	-->
 	<div id="course-list"></div>
+
 	<button class="new" id="newButton" onclick="showCourseCreation()">+</button>
+
+	<overlay id="createCourse" class="createCourse">
+	<input placeholder="Kursname" style="width: calc(100% - 50px);"><br><br>
+	Beschreibung:
+	<textarea placeholder="Beschreibung"></textarea><br><br>
+	Feedback-Fragen:
+	<div class="evaluations">
+	<div></div>
+	<button class="add_button" onclick="createCourseNewEvaluation()">+</button>
+	</div><br>
+	Start-Termin: <input type="date" style="margin-bottom: 5px;"><br>
+	Abgabe-Termin: <input type="date"><br><br>
+	<button onclick="saveCreateCourse()">Kurs erstellen</button>
+	</overlay>
 </content>
 
 <style>
@@ -139,13 +136,30 @@ button.auswertung:hover {
 .action.start {
 	position: absolute;
 	top: 16px;
-	right: 16px;
+	right: 60px;
 	font-size: 20px;
 	border-radius: var(--border-radius);
 	background-color: var(--accent_color_bg);
 }
 
 .action.start:hover {
+	background: var(--accent_color_bg_o);
+	border-radius: var(--border-radius);
+}
+
+.action.delete {
+	position: absolute;
+	top: 16px;
+	right: 16px;
+	font-size: 20px;
+	padding-left: 12px;
+	padding-right: 12px;
+	max-height: 40px;
+	border-radius: var(--border-radius);
+	background-color: var(--accent_color_bg);
+}
+
+.action.delete:hover {
 	background: var(--accent_color_bg_o);
 	border-radius: var(--border-radius);
 }
@@ -172,6 +186,71 @@ button.auswertung:hover {
 	gap: 15px;
 }
 
+.createCourse {
+	min-width: 70% !important;
+}
+.createCourse input {
+	width: 100%;
+	font-size: 18px;
+	padding: 4px;
+	background: none;
+	border: 1px solid black;
+	border-radius: var(--border-radius);
+}
+.createCourse textarea {
+	width: 100%;
+	font-size: 18px;
+	resize: none;
+	padding: 4px;
+	background: none;
+	border: 1px solid black;
+	height: 100px;
+	border-radius: var(--border-radius);
+}
+.createCourse .evaluations {
+	overflow-y: auto;
+	text-align: center;
+	max-height: 300px;
+	border: 2px solid grey;
+	padding: 10px;
+	border-radius: var(--border-radius);
+}
+.createCourse .evaluations .evaluation {
+	display: inline-block;
+	width: 100%;
+	border-radius: var(--border-radius);
+	border: 1px solid black;
+	padding: 10px;
+	text-align: center;
+	margin-bottom: 10px;
+	position: relative;
+}
+.createCourse .evaluation input {
+	display: inline-block;
+	font-size: 20px !important;
+	width: calc(100% - 80px);
+}
+.createCourse .evaluation > select {
+	width: 90%;
+	font-size: 18px;
+	margin-top: 15px;
+}
+.createCourse .evaluation > button {
+	width: 40px;
+	height: 40px;
+	font-size: 28px;
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	overflow: hidden;
+}
+.createCourse > button {
+	width: 100%;
+	font-size: 18px;
+	border-radius: var(--border-radius);
+	padding: 4px;
+	font-weight: normal;
+}
 </style>
 
 <script>
@@ -199,36 +278,95 @@ button.auswertung:hover {
 
 		<button class="action edit" onclick="showEditCourse('${courseId}')">
 			✎
-		</button> 
+		</button>
+		
+		<button class="action delete" onclick="deleteCourse('${courseId}')">
+			🗑
+		</button>
 		`;
 		courseList.appendChild(card);
 	}
 })();
+
+function createCourseNewEvaluation() {
+	const elm = getOverlay("createCourse");
+	if (elm == null) return;
 	
-async function showCourseCreation() {
-	await couchDB.set("course:NewCourse", {
-		"title": "NewCourse",
-		"description": "",
-		"owner": userData,
-		"questions": [
-		],
-		"result": [
-		],
+	const evaluations = elm.querySelector(".evaluations > div");
+	evaluations.innerHTML += createEvaluation({
+		"title": "", "type": "text"
+	});
+}
+
+async function saveCreateCourse() {
+	const elm = getOverlay("createCourse");
+	const inputs = elm.getElementsByTagName("input");
+	const description = elm.getElementsByTagName("textarea")[0];
+
+	const title = inputs[0].value.toLowerCase().trim();
+	if (title.length == 0) {
+		alert("Kursname darf nicht leer sein");
+		return;
+	}
+
+	const courseId = title.replace(/\s+/g, "_");
+
+	const data = {
+		"title": title,
+		"description": description.value,
+		"owner": userData.name,
+		"questions": [],
+		"result": [],
 		"result_history": [
 			{
-				"date": "2025-12-27",
-				"questions": [
-				],
-				"result": [
-				]
+				"date": "",
+				"questions": [],
+				"result": []
 			}
 		],
-		"start_date": "",
-		"expire_date": ""
-	});
-	userData.courses.push("NewCourse")
-	showEditCourse("NewCourse")
+		"start_date": inputs[1].value || "",
+		"expire_date": inputs[2].value || ""
+	};
+	
+	const evaluations = elm.querySelector(".evaluations > div");
+	const questions = [];
+	for (var i of evaluations.getElementsByClassName("evaluation")) {
+		const inpE = i.querySelector("input");
+		const selE = i.querySelector("select");
+		if (inpE.value.length == 0) continue;
+		
+		questions.push({
+			"title": inpE.value,
+			"type": selE.value
+		});
+	}
+	data.questions = questions;
+	evaluations.remove();
+	
+	await couchDB.set("course:" + courseId, data);
+
+	const users = await couchDB.get("users");
+	users[userData.name].courses.push(courseId);
+	await couchDB.set("users", users);
+	
+	hideOverlay("createCourse");
+	location.reload();
 }
+	
+async function showCourseCreation() {
+	showOverlay("createCourse");
+}
+
+async function deleteCourse(courseId) {
+	await couchDB.delete("course:" + courseId);
+
+	const users = await couchDB.get("users");
+	users[userData.name].courses = users[userData.name].courses.filter(id => id !== courseId);
+	await couchDB.set("users", users);
+
+	location.reload();
+}
+
 
 </script>
 	
@@ -402,10 +540,11 @@ async function saveEditCourse() {
 		data["expire_date"] = dateString;
 	}
 	
-	await couchDB.delete("course:" + oldID);
-	await couchDB.set("course:" + inputs[0].value.toLowerCase(), data);
+	
+	await couchDB.set("course:" + oldID, data);
 	
 	hideOverlay("edit_course");
+	location.reload();
 }
 
 
