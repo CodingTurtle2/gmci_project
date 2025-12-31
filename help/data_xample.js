@@ -3,7 +3,7 @@ async function createTemp() {
 	await couchDB.set("users", {
 		"turtle": {
 			"password": "1234",
-			"level": 0,
+			"level": 4,
 			"xp": 0,
 			"avatar": null,
 			"abilities": [],

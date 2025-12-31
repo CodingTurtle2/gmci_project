@@ -131,6 +131,7 @@
 	<div class="end-dialog">
 		<h2>Vielen Dank für deine Teilnahme!</h2><br>
 		<h3 id="level_up" style="display: none;">Level up!<br><br><br></h3>
+		<h3 id="xp_up" style="display: none;">+1 XP-Punkt<br><br><br></h3>
 		<button class="weiter-btn" onclick="onEndEvent(this)">
 			Zurück zur Hauptseite
 		</button>
@@ -274,11 +275,15 @@ function updateContent(old_page, page) {
 }
 
 async function onFinishEva() {
-	await playLevelSound();
 	await updateCourseAnswer(finalResult);
 	if (await levelUpXP(couchDB)) {
-		const lvlElm = getId("level_up");
-		if (lvlElm) lvlElm.style.display = "unset";
+		const e = getId("level_up");
+		if (e) e.style.display = "unset";
+		await playLevelSound();
+	} else {
+		const e = getId("xp_up");
+		if (e) e.style.display = "unset";
+		await playXPSound();
 	}
 }
 async function onEndEvent() {

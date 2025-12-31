@@ -263,13 +263,16 @@ async function init() {
 
 async function getXpPoints(elm, xp, name, pos) {
 	elm.remove();
-	playLevelSound();
 	const course = await couchDB.get("course:" + name);
 	
 	const data = course.result_history[pos];
 	data["got_xp"] = true;
 	
-	await levelUpXP(couchDB, userData, xp);
+	if (await levelUpXP(couchDB, userData, xp)) {
+		playLevelSound();
+	} else {
+		playXPSound();
+	}
 	
 	await couchDB.set("course:" + name, course);
 }

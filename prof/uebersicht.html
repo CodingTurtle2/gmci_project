@@ -255,10 +255,14 @@ button.auswertung:hover {
 
 <script>
 (async () => {
-	const courseList = document.getElementById("course-list");
-	
 	await setUserData(couchDB);
+	await setCourseView();
+})();
 
+async function setCourseView() {
+	const courseList = document.getElementById("course-list");
+	courseList.innerHTML = "";
+	
 	for(const courseId of userData.courses) {
 		const course = await couchDB.get("course:" + courseId);
 
@@ -286,16 +290,16 @@ button.auswertung:hover {
 		`;
 		courseList.appendChild(card);
 	}
-})();
+}
 
 function createCourseNewEvaluation() {
 	const elm = getOverlay("createCourse");
 	if (elm == null) return;
 	
 	const evaluations = elm.querySelector(".evaluations > div");
-	evaluations.innerHTML += createEvaluation({
+	evaluations.appendChild(createEvaluation({
 		"title": "", "type": "text"
-	});
+	}));
 }
 
 async function saveCreateCourse() {
@@ -310,22 +314,19 @@ async function saveCreateCourse() {
 	}
 
 	const courseId = title.replace(/\s+/g, "_");
-
+	
+	const sDateInp = inputs[inputs.length-2];
+	const eDateInp = inputs[inputs.length-1];
+	
 	const data = {
 		"title": title,
 		"description": description.value,
 		"owner": userData.name,
 		"questions": [],
 		"result": [],
-		"result_history": [
-			{
-				"date": "",
-				"questions": [],
-				"result": []
-			}
-		],
-		"start_date": inputs[1].value || "",
-		"expire_date": inputs[2].value || ""
+		"result_history": [],
+		"start_date": sDateInp.value || "",
+		"expire_date": eDateInp.value || ""
 	};
 	
 	const evaluations = elm.querySelector(".evaluations > div");
@@ -473,13 +474,17 @@ async function showEditCourse(name) {  //
 	inputs[0].value = data.title;
 	inputs[0].setAttribute("oldID", name);
 	description.value = data.description;
-	inputs[1].value = data["start_date"] ?? "";
-	inputs[2].value = data["expire_date"] ?? "";
+	
+	const sDateInp = inputs[inputs.length-2];
+	const eDateInp = inputs[inputs.length-1];
+	
+	sDateInp.value = data["start_date"] ?? "";
+	eDateInp.value = data["expire_date"] ?? "";
 	
 	const evaluations = elm.querySelector(".evaluations > div");
 	
 	for (var i of data.questions) {
-		evaluations.innerHTML += createEvaluation(i);
+		evaluations.appendChild(createEvaluation(i));
 	}
 }
 function createNewEvaluation() {
@@ -487,22 +492,25 @@ function createNewEvaluation() {
 	if (elm == null) return;
 	
 	const evaluations = elm.querySelector(".evaluations > div");
-	evaluations.innerHTML += createEvaluation({
-		"title": "", "type": "text"
-	});
+	evaluations.appendChild(
+		createEvaluation({
+			"title": "", "type": "text"
+		})
+	);
 }
 function createEvaluation(question) { 
-	return `
-<div class="evaluation">
-	<button onclick="this.parentElement.remove();">🗑</button>
-	<input value="${question.title}">
-	<select>
-		<option value="text" ${question.type == "text" ? "selected": ""}>Text</option>
-		<option value="scala" ${question.type == "scala" ? "selected": ""}>Scala</option>
-		<option value="emoji" ${question.type == "emoji" ? "selected": ""}>Emoji</option>
-	</select>
-</div>
+	const div = document.createElement("div");
+	div.classList.add("evaluation");
+	div.innerHTML = `
+<button onclick="this.parentElement.remove();">🗑</button>
+<input value="${question.title}">
+<select>
+	<option value="text" ${question.type == "text" ? "selected": ""}>Text</option>
+	<option value="scala" ${question.type == "scala" ? "selected": ""}>Scala</option>
+	<option value="emoji" ${question.type == "emoji" ? "selected": ""}>Emoji</option>
+</select>
 	`;
+	return div;
 }
 async function saveEditCourse() {
 	const elm = getOverlay("edit_course");
@@ -530,12 +538,15 @@ async function saveEditCourse() {
 	data["questions"] = questions;
 	evaluations.remove();
 	
-	if (inputs[1].value.length > 0) {
-		let dateObject = new Date(inputs[1].value);
+	const sDateInp = inputs[inputs.length-2];
+	const eDateInp = inputs[inputs.length-1];
+	
+	if (sDateInp.value.length > 0) {
+		let dateObject = new Date(sDateInp.value);
 		let dateString = dateObject.toISOString().split('T')[0];
 		data["start_date"] = dateString;
-	} if (inputs[2].value.length > 0) {
-		let dateObject = new Date(inputs[2].value);
+	} if (eDateInp.value.length > 0) {
+		let dateObject = new Date(eDateInp.value);
 		let dateString = dateObject.toISOString().split('T')[0];
 		data["expire_date"] = dateString;
 	}
@@ -544,7 +555,7 @@ async function saveEditCourse() {
 	await couchDB.set("course:" + oldID, data);
 	
 	hideOverlay("edit_course");
-	location.reload();
+	setCourseView();
 }
 
 
