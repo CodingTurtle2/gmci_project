@@ -96,6 +96,8 @@
     const couchDB = new CouchDB();
     setUserData(couchDB).then((val) => {
       setCourseView();
+      setLevelProgress(userData.xp);
+      setLevel(userData.level);
     });
 
     async function setCourseView() {
