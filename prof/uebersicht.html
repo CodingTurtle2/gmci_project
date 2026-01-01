@@ -52,9 +52,31 @@ setUserData(couchDB);
 	Abgabe-Termin: <input type="date"><br><br>
 	<button onclick="saveCreateCourse()">Kurs erstellen</button>
 	</overlay>
+
+	<overlay id="deletionConfirmation"> 
+		<p style="padding: 15px;"> Wollen sie wirklich diesen Kurs löschen?</p>
+		<div style="display: flex; gap: 15px; justify-content: center;">
+			<button class="confirmation" onclick="confirmNo()">Abbrechen</button>
+			<button class="confirmation" onclick="confirmYes()">OK</button>
+		</div>
+	</overlay>
 </content>
 
 <style>
+button.confirmation {
+	font-size: 20px;
+	font-weight: bold;
+	padding: 10px;
+	border: none;
+	border-radius: var(--border-radius);
+	background-color: var(--accent_color_fg);
+	cursor: pointer;
+}
+
+button.confirmation:hover {
+	background-color: var(--accent_color_fg_o);
+}
+
 button.new {
 	display: block;
     margin: 20px auto;
@@ -359,15 +381,43 @@ async function showCourseCreation() {
 	showOverlay("createCourse");
 }
 
-async function deleteCourse(courseId) {
-	await couchDB.delete("course:" + courseId);
+let confirmReturn = null;
 
-	const users = await couchDB.get("users");
-	users[userData.name].courses = users[userData.name].courses.filter(id => id !== courseId);
-	await couchDB.set("users", users);
-
-	location.reload();
+function showConfirm(onYes) {
+	confirmReturn = onYes;
+	showOverlay("deletionConfirmation")
 }
+
+function confirmYes() {
+	hideOverlay("deletionConfirmation")
+	if (confirmReturn) {
+		confirmReturn()
+	}
+	confirmReturn = null;
+}
+
+function confirmNo() {
+	hideOverlay("deletionConfirmation")
+	confirmReturn = null;
+}
+
+async function deleteCourse(courseId) {
+	showConfirm(
+	async() => {
+		await couchDB.delete("course:" + courseId);
+
+		const users = await couchDB.get("users");
+		users[userData.name].courses = users[userData.name].courses.filter(id => id !== courseId);
+		await couchDB.set("users", users);
+
+		location.reload();
+	}
+	)
+}
+
+
+
+
 
 
 </script>
