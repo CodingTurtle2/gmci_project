@@ -74,13 +74,13 @@
       <span>Prof. Dr. Kurt Schneider</span>
       <br>
       <span>Termine</span>
-      <div id="courses-list" style="height: 200px; overflow-y: scroll; border: 1px solid black;">
+      <div style="height: 200px; overflow-y: scroll; border: 1px solid black;">
         <span>Di 01.01.2023, 13:00 - 15:00 Uhr</span>
         <br>
         <span>Raum 023, Gebäude 2323</span>
       </div>
       <span>Bewertungen</span>
-      <div id="courses-list" style="height: 200px; overflow-y: scroll; border: 1px solid black;">
+      <div style="height: 200px; overflow-y: scroll; border: 1px solid black;">
         <div>Di, 01.01.2023</div>
         <div>Di, 01.01.2023</div>
         <div>Di, 01.01.2023</div>
@@ -95,7 +95,43 @@
 
     const couchDB = new CouchDB();
     setUserData(couchDB).then((val) => {
+      setCourseView();
     });
+
+    async function setCourseView() {
+      const courseList = document.getElementById("courses-list");
+      courseList.innerHTML = "";
+
+      for (const courseId of userData.courses) {
+        const course = await couchDB.get("course:" + courseId);
+
+        const card = document.createElement("div");
+        card.className = "course-card";
+
+        card.innerHTML = `
+            <div class="course-title">${course.title}</div>
+
+            <div class="course-description">
+              ${course.description}
+            </div>
+            
+            <button class="action delete" onclick="deleteCourse('${courseId}')">
+              🗑
+            </button>
+            `;
+        courseList.appendChild(card);
+      }
+    }
+
+    async function deleteCourse(courseId) {
+      await couchDB.delete("course:" + courseId);
+
+      const users = await couchDB.get("users");
+      users[userData.name].courses = users[userData.name].courses.filter(id => id !== courseId);
+      await couchDB.set("users", users);
+
+      location.reload();
+    }
 
     function participateInSurvey() {
       showOverlay("survey");
