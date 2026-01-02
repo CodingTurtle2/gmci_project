@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=0.5">
+  <link rel="stylesheet" href="../lib/basic.css">
+  <script src="../auth.js"></script>
+  <script src="../lib/basic.js"></script>
+  <script src="../other/skills.js"></script>
+  <script src="../other/skilltree.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+  <title>Kurs Anzeige</title>
+</head>
+
+<body>
+  <div class="header_bar_1">
+    <div>
+      <button onclick="location.href = './uebersicht.html?user=' + userData.name;" class="navigation">Meine
+        Kurse</button>
+    </div>
+    <div>
+      <button class="auswertung" onclick='location.href = "./auswertung.html?user=" + userData.name'>
+
+      </button>
+    </div>
+    <div>
+      <button class="profile" onclick='showOverlay("miniProfile")'>
+        <overlay id="miniProfile" />
+      </button>
+    </div>
+  </div>
+  <div class="header_bar_1_placeholder"></div>
+  <input id="tester" type="text">
+  <div>
+    <span id="course-name">Kurs SWT</span>
+    <span id="course-owner">Prof. Dr. Kurt Schneider</span>
+    <br>
+    <span>Termine</span>
+    <div style="height: 200px; overflow-y: scroll; border: 1px solid black;">
+      <span>Di 01.01.2023, 13:00 - 15:00 Uhr</span>
+      <br>
+      <span>Raum 023, Gebäude 2323</span>
+    </div>
+    <span>Bewertungen</span>
+    <div id="course-surveys" style="height: 200px; overflow-y: scroll; border: 1px solid black;">
+      <div>Di, 01.01.2023</div>
+      <div>Di, 01.01.2023</div>
+      <div>Di, 01.01.2023</div>
+
+    </div>
+
+  </div>
+  <script>
+    const couchDB = new CouchDB();
+    setUserData(couchDB).then(
+      () => {
+        const params = getURLArgsMap();
+        const courseId = params["course"];
+
+        if (courseId) {
+          loadCourse(courseId);
+        }
+      }
+    )
+
+    async function loadCourse(courseId) {
+      const course = await couchDB.get("course:" + courseId);
+      if (course == undefined) {
+        alert("Kurs existiert nicht!");
+        return;
+      }
+      const results = course.result_history;
+
+      document.getElementById("course-name").innerHTML = course.title;
+      document.getElementById("course-owner").innerHTML = course.owner;
+
+      const courseSurveys = document.getElementById("course-surveys");
+      courseSurveys.innerHTML = "";
+      for (const result of results) {
+        const date = new Date(result.date);
+        const dateStr = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
+        courseSurveys.innerHTML += `<div>Di, ${dateStr}</div>`;
+      }
+    }
+
+
+
+  </script>
+</body>
+
+</html>

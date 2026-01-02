@@ -20,7 +20,7 @@
     </div>
     <div>
       <button class="auswertung" onclick='location.href = "./auswertung.html?user=" + userData.name'>
-        Auswertungen
+
       </button>
     </div>
     <div>
@@ -31,24 +31,13 @@
   </div>
   <div class="header_bar_1_placeholder"></div>
 
-  <button onclick="participateInSurvey()">Participate in Survey</button>
+  <button onclick="participateInSurvey()">An Umfrage teilnehmen</button>
 
   <div id="courses-container">
     <h2>Courses</h2>
 
     <div id="courses-list" style="height: 300px; overflow-y: scroll; border: 1px solid black;">
-      <div class="course-item" onclick="selectCourse('Mathematics')">
-        <span>Mathematics</span>
-        <button onclick="removeCourse('Mathematics')">del</button>
-      </div>
-      <div class="course-item" onclick="selectCourse('German')">
-        <span>German</span>
-        <button onclick="removeCourse('German')">del</button>
-      </div>
-      <div class="course-item" onclick="selectCourse('English')">
-        <span>English</span>
-        <button onclick="removeCourse('English')">del</button>
-      </div>
+
     </div>
 
     <button onclick="newCourse()">+</button>
@@ -56,37 +45,22 @@
 
   <div id="level-display">
     <div>Level <span id="level-number">5</span></div>
-    <progress id="level-bar" value="70" max="100"></progress>
+    <progress class="xp-bar" id="level-bar" value="0" max="10"></progress>
   </div>
 
   <!-- Overlays -->
   <overlay id="survey">
     <div>
       <span>Gib den Code der Umfrage ein</span>
-      <input type="text" placeholder="****">
-      <button>Teilnehmen</button>
+      <input id="survey-code" type="text" placeholder="****">
+      <button onclick="startSurvey()">Teilnehmen</button>
     </div>
   </overlay>
 
-  <overlay id="course">
+  <overlay id="add-course">
     <div>
-      <span>Kurs SWT</span>
-      <span>Prof. Dr. Kurt Schneider</span>
-      <br>
-      <span>Termine</span>
-      <div style="height: 200px; overflow-y: scroll; border: 1px solid black;">
-        <span>Di 01.01.2023, 13:00 - 15:00 Uhr</span>
-        <br>
-        <span>Raum 023, Gebäude 2323</span>
-      </div>
-      <span>Bewertungen</span>
-      <div style="height: 200px; overflow-y: scroll; border: 1px solid black;">
-        <div>Di, 01.01.2023</div>
-        <div>Di, 01.01.2023</div>
-        <div>Di, 01.01.2023</div>
-
-      </div>
-
+      <input id="survey-code" type="text" placeholder="Kursname">
+      <button onclick="addCourse()">Hinzufügen</button>
     </div>
   </overlay>
 
@@ -100,6 +74,17 @@
       setLevel(userData.level);
     });
 
+    async function startSurvey() {
+      const code = getOverlay("survey").getElementsByTagName("INPUT")[0].value.trim();
+      console.log(code);
+      var course = await couchDB.get("course:" + code);
+      if (course != undefined) {
+        location.href = "./umfrage.html?user=" + userData.name + ",course=" + code;
+      } else {
+        alert("Umfrage nicht gefunden!");
+      }
+    }
+
     async function setCourseView() {
       const courseList = document.getElementById("courses-list");
       courseList.innerHTML = "";
@@ -109,6 +94,7 @@
 
         const card = document.createElement("div");
         card.className = "course-card";
+        card.onclick = () => location.href = "./kursAnzeige.html?user=" + userData.name + ",course=" + courseId;
 
         card.innerHTML = `
             <div class="course-title">${course.title}</div>
@@ -126,8 +112,6 @@
     }
 
     async function deleteCourse(courseId) {
-      await couchDB.delete("course:" + courseId);
-
       const users = await couchDB.get("users");
       users[userData.name].courses = users[userData.name].courses.filter(id => id !== courseId);
       await couchDB.set("users", users);
@@ -144,12 +128,23 @@
       showOverlay("course");
     }
 
-    function removeCourse(courseName) {
-      console.log("remove called for course:", courseName);
+    function newCourse() {
+      showOverlay("add-course");
     }
 
-    function newCourse() {
-      console.log("New course button pressed");
+    async function addCourse() {
+      const courseName = getOverlay("add-course").getElementsByTagName("INPUT")[0].value.trim();
+      const course = await couchDB.get("course:" + courseName);
+      if (course == undefined) {
+        alert("Kurs existiert nicht!");
+        return;
+      }
+
+      const users = await couchDB.get("users");
+      users[userData.name].courses.push(courseName);
+      await couchDB.set("users", users);
+      setCourseView();
+      location.reload();
     }
 
     function setLevelProgress(percent) {
@@ -172,6 +167,25 @@
     }
 
   </script>
+
+  <style>
+    .xp-bar {
+      width: 100%;
+      height: 20px;
+      background-color: #dbdfdb;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+
+    .xp-bar::-moz-progress-bar {
+      background-color: #31b335;
+    }
+
+    .xp-bar::-webkit-progress-value {
+      background: #31b335;
+    }
+  </style>
 </body>
 
 </html>
