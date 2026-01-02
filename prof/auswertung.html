@@ -72,6 +72,7 @@ button.navigation:hover {
 	padding-left: 10px !important;
 }
 .content-table > tbody > tr:first-child > td:last-child > div {
+	display: flex;
 	height: 100%;
 	max-height: 100%;
 	padding: 15px;
@@ -146,6 +147,11 @@ async function loadStats() {
 			"result": course.result ?? []
 		}, i);
 	}
+	
+	const bottomLabel = document.createElement("label");
+	bottomLabel.style = `display: inline-block; font-size: 5px;`;
+	bottomLabel.innerHTML = "&nbsp;";
+	udiv.appendChild(bottomLabel);
 	
 	let studenten = gesamtAuswertung[3].reduce((acc, val) => acc + val, 0) / gesamtAuswertung[3].length;
 

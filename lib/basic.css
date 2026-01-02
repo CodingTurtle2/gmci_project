@@ -54,6 +54,16 @@ input {
 	border-radius: var(--border-radius);
 	padding: 4px;
 }
+select {
+	border-radius: var(--border-radius);
+	padding: 5px;
+	font-size: 18px;
+}
+button {
+	border-radius: var(--border-radius);
+	font-size: 18px;
+	font-weight: normal;
+}
 
 /* ----------- overlay ----------- */
 
@@ -229,6 +239,9 @@ dropdown > div:first-child {
 	width: 100%;
 	height: 100%;
 	background: none;
+}
+dropdown > div > button {
+	border-radius: 0;
 }
 dropdown > div:last-child {
 	position: absolute;
