@@ -9,6 +9,7 @@
   <script src="../lib/basic.js"></script>
   <script src="../other/skills.js"></script>
   <script src="../other/skilltree.js"></script>
+  <script src="./uebersicht_overlay.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
   <title>Kurs Anzeige</title>
 </head>
@@ -16,13 +17,11 @@
 <body>
   <div class="header_bar_1">
     <div>
-      <button onclick="location.href = './uebersicht.html?user=' + userData.name;" class="navigation">Meine
+      <button onclick="location.href = './uebersicht.html?user=' + userData.name;" class="back">Meine
         Kurse</button>
     </div>
     <div>
-      <button class="auswertung" onclick='location.href = "./auswertung.html?user=" + userData.name'>
 
-      </button>
     </div>
     <div>
       <button class="profile" onclick='showOverlay("miniProfile")'>
@@ -31,27 +30,19 @@
     </div>
   </div>
   <div class="header_bar_1_placeholder"></div>
-  <input id="tester" type="text">
-  <div>
-    <span id="course-name">Kurs SWT</span>
-    <span id="course-owner">Prof. Dr. Kurt Schneider</span>
+  <div class="course-card">
+    <span style="font-weight: bold;" id="course-name"></span>
+    <span id="course-owner"></span>
     <br>
-    <span>Termine</span>
-    <div style="height: 200px; overflow-y: scroll; border: 1px solid black;">
-      <span>Di 01.01.2023, 13:00 - 15:00 Uhr</span>
-      <br>
-      <span>Raum 023, Gebäude 2323</span>
-    </div>
-    <span>Bewertungen</span>
-    <div id="course-surveys" style="height: 200px; overflow-y: scroll; border: 1px solid black;">
-      <div>Di, 01.01.2023</div>
-      <div>Di, 01.01.2023</div>
-      <div>Di, 01.01.2023</div>
-
+    <span>Bewertungen der Sessions</span>
+    <div id="course-surveys" style="height: 200px; overflow-y: scroll; scrollbar-width: none; ">
     </div>
 
   </div>
+
   <script>
+    const evaluationResults = {};
+
     const couchDB = new CouchDB();
     setUserData(couchDB).then(
       () => {
@@ -73,20 +64,234 @@
       const results = course.result_history;
 
       document.getElementById("course-name").innerHTML = course.title;
-      document.getElementById("course-owner").innerHTML = course.owner;
+      document.getElementById("course-owner").innerHTML = "Ersteller: " + course.owner;
 
       const courseSurveys = document.getElementById("course-surveys");
       courseSurveys.innerHTML = "";
-      for (const result of results) {
+      results.forEach((result, idx) => {
+        evaluationResults[idx] = result;
         const date = new Date(result.date);
         const dateStr = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
-        courseSurveys.innerHTML += `<div>Di, ${dateStr}</div>`;
-      }
+        courseSurveys.innerHTML += `<div class="session" onclick="evaluationClick(${idx})">${dateStr}</div>`;
+      });
+    }
+
+    function evaluationClick(idx) {
+      const result = evaluationResults[idx];
+      if (!result) return;
+      showEvaluationResult(result);
     }
 
 
 
   </script>
+  <style>
+    button.back {
+      font-size: 20px;
+      padding: 15px;
+      padding-left: 40px;
+      padding-right: 40px;
+      background-color: var(--accent_color_bg);
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+    }
+
+    button.back:focus-visible {
+      outline: 2px var(--accent_color_fg_o);
+      outline-offset: 2px;
+    }
+
+    button.back:hover {
+      background: var(--accent_color_bg_o);
+      border-radius: var(--border-radius);
+    }
+  </style>
+  <style>
+    .xp-bar {
+      width: 100%;
+      height: 20px;
+      background-color: #dbdfdb;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+
+    .xp-bar::-moz-progress-bar {
+      background-color: #31b335;
+    }
+
+    .xp-bar::-webkit-progress-value {
+      background: #31b335;
+    }
+
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 1.5rem;
+      align-items: center;
+      height: calc(100vh - 75px);
+    }
+
+    button.survey {
+      font-size: 20px;
+      padding: 15px;
+      padding-left: 40px;
+      padding-right: 40px;
+      background-color: var(--accent_color_bg);
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      max-width: 30rem;
+      width: 100%;
+    }
+
+    button.survey:focus-visible {
+      outline: 2px var(--accent_color_fg_o);
+      outline-offset: 2px;
+    }
+
+    button.survey:hover {
+      background: var(--accent_color_bg_o);
+      border-radius: var(--border-radius);
+    }
+
+    .courses-container {
+      width: 100%;
+    }
+
+    .level-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .level {
+      font-family: Minecraftia;
+      color: #7bd67e;
+    }
+
+    #courses-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-height: 60vh;
+    }
+
+    #courses-list {
+      width: 100%;
+      overflow-y: scroll;
+      scrollbar-width: none;
+      height: auto;
+    }
+
+    .course-card {
+      position: relative;
+      margin: 1rem;
+      min-height: 300px;
+      padding: 16px;
+      background: var(--accent_color_bg_o);
+      border-radius: 12px;
+      box-shadow: var(--def-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .course-title {
+      margin: 0;
+      padding: 10px;
+      font-size: 25px;
+      font-weight: bold;
+    }
+
+    .course-description {
+      margin: 0;
+      font-size: 20px;
+      padding: 10px;
+    }
+
+    .course-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: auto;
+    }
+
+    .action {
+      padding: 8px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    .action.start {
+      position: absolute;
+      top: 16px;
+      right: 70px;
+      font-size: 20px;
+      border-radius: var(--border-radius);
+      background-color: var(--accent_color_bg);
+    }
+
+    .action.start:hover {
+      background: var(--accent_color_bg_o);
+      border-radius: var(--border-radius);
+    }
+
+    .action.delete {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      font-size: 20px;
+      padding-left: 12px;
+      padding-right: 12px;
+      max-height: 40px;
+      border-radius: var(--border-radius);
+      background-color: var(--accent_color_bg);
+    }
+
+    .action.delete:hover {
+      background: var(--accent_color_bg_o);
+      border-radius: var(--border-radius);
+    }
+
+    button.new {
+      display: block;
+      margin: 20px auto;
+      font-size: 30px;
+      font-weight: bold;
+      border: none;
+      width: 60px;
+      height: 60px;
+      background-color: var(--accent_color_bg);
+      cursor: pointer;
+    }
+
+    button.new:hover {
+      background-color: var(--accent_color_bg_o);
+    }
+
+    .session {
+      font-size: 20px;
+      padding: 15px;
+      margin: 5px;
+      background-color: var(--accent_color_bg);
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      width: 100%;
+      max-width: 30rem;
+    }
+
+    .session:hover {
+      background: var(--accent_color_bg_o);
+      border-radius: var(--border-radius);
+    }
+  </style>
 </body>
 
 </html>
