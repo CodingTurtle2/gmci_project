@@ -191,6 +191,7 @@
 <script>
 const couchDB = new CouchDB();
 setUserData(couchDB).then((val) => {
+	if (!val) return;
 	setCourseView();
 	setLevelProgress(userData.xp);
 	setLevel(userData.level);

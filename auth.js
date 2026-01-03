@@ -1,3 +1,6 @@
+const debug = false;
+
+
 const couchdb_username = "admin";
 const couchdb_password = "admin";
 
