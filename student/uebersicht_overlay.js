@@ -133,6 +133,8 @@ border-radius: var(--border-radius);
 		span.innerHTML = `<div style="width: 100%; height: 100%; overflow-y: auto;">
 			${answers}
 		</div>`;
+		span.style.justifyContent = "top";
+		span.style.setProperty("justify-content", "start");
 	}
 }
 
