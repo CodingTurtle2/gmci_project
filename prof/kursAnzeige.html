@@ -116,11 +116,21 @@ setUserData(couchDB);
 				break;
 
 			case "scala":
-				let score = 0;
-				for(let j = 0; j < courseInfo.result.length; j++) {score += courseInfo.result[j][index]};
-				score = score / courseInfo.result.length;
-				const percent = (score/5)*100;
-
+				var score = 0;
+				for (let j = 0; j < courseInfo.result.length; j++) {
+					score += courseInfo.result[j][index];
+				}
+				var percent;
+				if (courseInfo.result.length > 0) {
+					score = score / courseInfo.result.length;
+					percent = (score/5)*100;
+				} else {
+					score = 0;
+					percent = 0;
+				}
+				
+				console.log(courseInfo.result.length);
+				
 				const resultDisplay = document.createElement("div");
 				resultDisplay.className = "overlayScalaRes"
 				resultDisplay.innerHTML = `
