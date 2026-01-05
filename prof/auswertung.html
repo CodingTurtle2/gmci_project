@@ -156,7 +156,7 @@ async function loadStats() {
 	bottomLabel.innerHTML = "&nbsp;";
 	udiv.appendChild(bottomLabel);
 	
-	let studenten = gesamtAuswertung[3].reduce((acc, val) => acc + val, 0) / gesamtAuswertung[3].length;
+	let studenten = gesamtAuswertung[3].length == 0 ? 0 : gesamtAuswertung[3].reduce((acc, val) => acc + val, 0) / gesamtAuswertung[3].length;
 
 	
 	gdiv.innerHTML = `
