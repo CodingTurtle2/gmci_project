@@ -11,7 +11,10 @@
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 <script>
 const couchDB = new CouchDB();
-setUserData(couchDB);
+async function start() {
+	await setUserData(couchDB);
+}
+start();
 </script>
 <title>Kurs Anzeige</title>
 </head>
@@ -35,7 +38,7 @@ setUserData(couchDB);
 		</div>
 		
 		<div class="questionColumn">
-			<div id="questionCards"></div>
+			<div id="questionCards" style="display: flex; flex-direction: column; gap: 20px"></div>
 		</div>
 	</div>	
 	<button class="live" id="liveButton" onclick="AnsichtZeigen()">
@@ -72,7 +75,7 @@ setUserData(couchDB);
 		const courseInfo = await couchDB.get("course:" + courseId);
 		let index = 0;
 		for(const question of courseInfo.questions) {
-			const overlayId = `qOver${index}`
+			const overlayId = `qOver${index}`;
 			const answerContainerId = `answerContainer${index}`;
 			
 
@@ -82,13 +85,13 @@ setUserData(couchDB);
 			card.innerHTML = `
 			<div class="questionTitle">${question.title}</div>
 
-			<button class="questionResults" onclick='questionOverlay("${overlayId}", "${index}")'>
+			<button class="questionResults" onclick='questionOverlay("${overlayId}", ${index})'>
 				Auswertung
-				<overlay class="my_overlay" id="${overlayId}">
+				<overlay class="my_overlay" id="${overlayId}" onclose="closeQuestion()">
 					<div class="overlayTitle">
 						${question.title}:
 					</div>
-					<div id="${answerContainerId}"></div>
+					<div id="${answerContainerId}" class="${answerContainerId}"></div>
 				</overlay>
 			</button>
 			`;
@@ -97,9 +100,37 @@ setUserData(couchDB);
 		}
 
 	}
-	async function questionOverlay(overlayId, index) {
 
-		const awnserList = document.getElementById(`answerContainer${index}`)
+	var overlayInterval = null;
+	var activeOverlayIndex = null;
+
+	async function questionOverlay(overlayId, index) {
+		clearInterval(overlayInterval);
+		overlayInterval = null;
+
+		activeOverlayIndex = index;
+
+		showOverlay(overlayId);
+		await new Promise(r => setTimeout(r, 0));
+		await updateOverlay(index);
+
+		overlayInterval = setInterval(async() => {
+			await updateOverlay(activeOverlayIndex);
+		}, 3000);
+	}
+
+	function closeQuestion() {
+		clearInterval(overlayInterval);
+		overlayInterval = null;
+	}
+
+
+	async function updateOverlay(index) {
+		const overlayId = getOverlay(`qOver${index}`);
+		if(!overlayId) {return;}
+		const awnserList = overlayId.querySelector(`.answerContainer${index}`);
+		if(!awnserList) {return;}
+
 		const courseInfo = await couchDB.get("course:" + courseId)
 		awnserList.innerHTML = "";
 
@@ -179,8 +210,6 @@ setUserData(couchDB);
 				
 				break;
 		}
-
-		showOverlay(overlayId);
 	}
 </script>
 
