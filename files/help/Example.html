@@ -50,12 +50,12 @@ async function main() {
 	const data = await couchDB.get("xample");
 	console.log(JSON.stringify(data));
 	//Gibt { "my_data": 1, "more_data": "bla" } wieder
+	
+	console.log(JSON.stringify(await couchDB.get("*")));
+	//Gibt ["users","course:bucket","course:weiche_ware","course:algebra","course:geometrie","course:statistik","xample"] wieder
 }
 
 main();
-createTemp().then((v) => {
-	setUserData(couchDB);
-});
 
 </script>
 

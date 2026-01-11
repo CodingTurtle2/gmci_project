@@ -105,7 +105,7 @@ window.addEventListener("load", (event) => {
 
 //http://127.0.0.1:5984/_utils/#_config/couchdb@127.0.0.1
 class CouchDB {
-	static _default_url = "http://127.0.0.1:5984/";
+	static _default_url = "/couchdb/";
 
 	constructor() {
 		this._does_auth_exists_err();
@@ -162,7 +162,7 @@ class CouchDB {
 
 			this.request.onreadystatechange = () => {
 				if (request.readyState != 4) return;
-
+				
 				try {
 					if (request.status == 200 || request.status == 201) {
 						var response = JSON.parse(request.responseText);
