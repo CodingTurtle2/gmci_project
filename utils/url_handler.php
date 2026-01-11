@@ -1,13 +1,8 @@
 <?php
 
-require_once 'features.php';
-
-///A collection of given paths
 class TurtlePathInfo {
 	public string $content;
 }
-
-///Parse url and execute it
 class TurtleURLObject {
 	public static function create_from_server(bool $lowerCase = true, bool $alternativeURL = true) :TurtleURLObject {
 		$urlParts = explode('?',  trim($_SERVER['REQUEST_URI'], '/'));
@@ -37,9 +32,6 @@ class TurtleURLObject {
 		$bodyContent = file_get_contents("php://input");
 		return $bodyContent;
 	}
-	public function get_body_json() :mixed {
-		return json_decode($this->get_body_text());
-	}
 	
 	public function get_html_file(string $file_path): string {
 		if (!file_exists($file_path)) {
@@ -48,7 +40,6 @@ class TurtleURLObject {
 			return file_get_contents($file_path);
 		}
 	}
-	
 	public function send_text(string $text) :void {
 		header('Content-Type: text/plain');
 		echo $text;
@@ -92,20 +83,6 @@ class TurtleURLObject {
 		} else {
 			return false;
 		}
-		return true;
-	}
-	
-	public function send_download_file(string $path) :bool {
-		if (!file_exists($path)) return false;
-		header('Content-Description: File Transfer');
-		header('Content-Type: application/octet-stream');
-		header('Content-Disposition: attachment; filename="'.basename($path).'"');
-		header('Expires: 0');
-		header('Cache-Control: must-revalidate');
-		header('Pragma: public');
-		header('Content-Length: ' . filesize($path));
-		
-		readfile($path);
 		return true;
 	}
 	
@@ -164,4 +141,16 @@ function _parseUrlMark($urlParts) :object {
 		}
 	}
 	return $res;
+}
+function isFileExtImage(string $fileExt) :bool {
+	switch ($fileExt) {
+		case 'png':
+		case 'jpg':
+		case 'jpeg':
+		case 'ico':
+		case 'gif':
+			return true;
+		default:
+			return false;
+	}
 }
