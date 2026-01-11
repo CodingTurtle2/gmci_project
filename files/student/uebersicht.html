@@ -158,6 +158,12 @@
 <div id="courses-list"></div>
 
 <div class="holder_div">
+	<div style="display: none;">
+		<input id="courseInput" list="courseDatalist" placeholder="Kurs eingeben..." autocomplete="off" />
+		<datalist id="courseDatalist"></datalist>
+		<input id="courseId" type="hidden" />
+	</div>
+
 	<div class="level_div">
 		<div id="level-display" class="level-container">
 			<div class="level">Level <span id="level-number">5</span></div>
@@ -182,7 +188,9 @@
 
 <overlay id="add-course">
 	<div style="text-align: center; padding: 15px; margin-right: 2rem">
-		<input id="survey-code" type="text" placeholder="Kursname" />
+		<input id="courseInputO" list="courseDatalist" placeholder="Kurs eingeben..." autocomplete="off" />
+		<datalist id="courseDatalistO"></datalist>
+		<input id="courseIdO" type="hidden" />
 		<br />
 		<button class="" style="margin-top: 1rem" onclick="addCourse()">Hinzufügen</button>
 	</div>
@@ -190,12 +198,12 @@
 
 <script>
 const couchDB = new CouchDB();
-setUserData(couchDB).then((val) => {
+setUserData(couchDB).then(async (val) => {
 	if (!val) return;
 	setCourseView();
 	setLevelProgress(userData.xp);
 	setLevel(userData.level);
-});
+}).catch(console.error);
 
 async function startSurvey() {
 	const code = getOverlay("survey").getElementsByTagName("INPUT")[0].value.trim();
@@ -272,8 +280,9 @@ function selectCourse(courseName) {
 	showOverlay("course");
 }
 
-function newCourse() {
+async function newCourse() {
 	showOverlay("add-course");
+	await setupCourseDatalist();
 }
 
 async function addCourse() {
@@ -312,6 +321,55 @@ function addCourseToList(courseName) {
 		<button onclick="editCourse('${courseName}')">Edit</button>
 	`;
 	coursesList.appendChild(courseDiv);
+}
+
+async function setupCourseDatalist() {
+	
+  const input = document.getElementById("courseInput");
+  const datalist = document.getElementById("courseDatalist");
+  const hiddenId = document.getElementById("courseId");
+
+	
+  const courses = await loadCourseOptions();
+
+  const labelToId = new Map(courses.map(c => [c.label, c.id]));
+
+  datalist.innerHTML = "";
+  for (const c of courses) {
+    const opt = document.createElement("option");
+    opt.value = c.label;
+    datalist.appendChild(opt);
+  }
+
+  function syncSelectedId() {
+    const id = labelToId.get(input.value) ?? "";
+    hiddenId.value = id;
+  }
+
+  input.addEventListener("input", syncSelectedId);
+  input.addEventListener("change", syncSelectedId);
+
+  syncSelectedId();
+}
+
+async function loadCourseOptions() {
+  const keys = await withTimeout(couchDB.get("*"), 3000, 'couchDB.get("*")');
+  const courseKeys = (keys ?? []).filter(k => typeof k === "string" && k.startsWith("course:"));
+
+  return courseKeys
+    .map(id => {
+      const code = id.slice("course:".length);
+      return { id, code, label: code };
+    })
+    .sort((a, b) => a.label.localeCompare(b.label, "de"));
+}
+
+function withTimeout(promise, ms, label = "operation") {
+    let t;
+    const timeout = new Promise((_, reject) => {
+        t = setTimeout(() => reject(new Error(`Timeout after ${ms}ms: ${label}`)), ms);
+    });
+    return Promise.race([promise, timeout]).finally(() => clearTimeout(t));
 }
 </script>
 </body>
