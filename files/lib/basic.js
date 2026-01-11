@@ -349,14 +349,7 @@ function form1(string) {
 
 
 async function getUserData(couchDB) {
-	let username = getURLArgsMap()["user"];
-	if (!username) {
-		if (debug && typeof (debug_username) == "string") {
-			username = debug_username;
-		} else {
-			return null;
-		}
-	}
+	let username = localStorage.getItem("user");
 	const res = await couchDB.get("users");
 	if (!res) return null;
 	const data = res[username];

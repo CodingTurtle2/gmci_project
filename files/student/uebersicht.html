@@ -208,7 +208,7 @@ async function startSurvey() {
 			users[userData.name].courses.push(code);
 		}
 		await couchDB.set("users", users);
-		location.href = "./umfrage.html?user=" + userData.name + ",course=" + code;
+		location.href = "./umfrage.html?course=" + code;
 	} else {
 		alert("Umfrage nicht gefunden!");
 	}
@@ -229,7 +229,7 @@ async function setCourseView() {
 		card.addEventListener("click", (e) => {
 			if (e.target.closest("button")) return;
 			location.href =
-				"./kursAnzeige.html?user=" + userData.name + ",course=" + courseId;
+				"./kursAnzeige.html?course=" + courseId;
 		});
 
 		const surveyUrl = (card.innerHTML = `
@@ -240,7 +240,7 @@ async function setCourseView() {
 </div>
 
 ${isExpired ? '': `
-<button class="action start" onclick='location.href = "./umfrage.html?user=${userData.name},course=${courseId.trim()}";'>
+<button class="action start" onclick='location.href = "./umfrage.html?course=${courseId.trim()}";'>
 	Umfrage Starten
 </button>`
 }

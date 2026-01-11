@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="./lib/basic.css" />
 <script src="./auth.js"></script>
 <script src="./lib/basic.js"></script>
+
 <style>
 	* {
 		box-sizing: border-box;
@@ -98,6 +99,7 @@
 		autocomplete="username"
 		autocapitalize="off"
 		autocorrect="off"
+		onkeypress='if (event.key == "Enter") login()'
 		required
 		autofocus
 	/>
@@ -108,6 +110,7 @@
 		id="password"
 		name="password"
 		autocomplete="current-password"
+		onkeypress='if (event.key == "Enter") login()'
 		required
 	/>
 
@@ -141,11 +144,14 @@ async function login() {
 	if (user.password != password) {
 		return alert("Incorrect password!");
 	}
+	
+	localStorage.setItem("user", username);
+	
 	if (user.role === "student") {
-		location.href = "./student/uebersicht.html?user=" + username;
+		location.href = "./student/uebersicht.html";
 		return;
 	} else {
-		location.href = "./prof/uebersicht.html?user=" + username;
+		location.href = "./prof/uebersicht.html";
 		return;
 	}
 }
