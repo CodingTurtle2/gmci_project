@@ -33,6 +33,13 @@ class CouchDB {
 		file_put_contents($this->db_file, str_replace("    ", "\t", json_encode($content, JSON_PRETTY_PRINT)));
 	}
 	
+	public function resetFile() {
+		if (file_exists($this->db_file)) {
+			unlink($this->db_file);
+		}
+		$this->setFile($this->getFile());
+	}
+	
 	public function sendError(string $msg, int $code = 404) :bool {
 		http_response_code($code);
 		$this->url_obj->send_json(["ok" => false, "reason" => $msg]);

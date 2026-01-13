@@ -145,7 +145,7 @@ async function login() {
 		return alert("Incorrect password!");
 	}
 	
-	localStorage.setItem("user", username);
+	sessionStorage.setItem("user", username);
 	
 	if (user.role === "student") {
 		location.href = "./student/uebersicht.html";

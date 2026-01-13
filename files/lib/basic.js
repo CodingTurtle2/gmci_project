@@ -349,7 +349,7 @@ function form1(string) {
 
 
 async function getUserData(couchDB) {
-	let username = localStorage.getItem("user");
+	let username = sessionStorage.getItem("user");
 	const res = await couchDB.get("users");
 	if (!res) return null;
 	const data = res[username];
