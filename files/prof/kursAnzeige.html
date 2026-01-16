@@ -38,7 +38,7 @@ start();
 		</div>
 		
 		<div class="questionColumn">
-			<div id="questionCards" style="display: flex; flex-direction: column; gap: 20px"></div>
+			<div id="questionCards" style="display: flex; flex-direction: column; gap: 15px"></div>
 		</div>
 	</div>	
 	<button class="live" id="liveButton" onclick="AnsichtZeigen()">
@@ -165,7 +165,7 @@ start();
 				const resultDisplay = document.createElement("div");
 				resultDisplay.className = "overlayScalaRes"
 				resultDisplay.innerHTML = `
-				<div class="overlayTextRes"> ${percent}% positive </div>
+				<div class="overlayTextRes"> ${percent.toFixed(2)}% positive </div>
 				<div class="scoreBar">
 					<div class="scoreFill" id="scoreFill${index}" style="width: ${(score/5)*100}%"></div>
 				</div>`;
@@ -191,7 +191,7 @@ start();
 				const resultDisplayE = document.createElement("div");
 				resultDisplayE.className = "overlayScalaRes"
 				resultDisplayE.innerHTML = `
-				<div class="overlayTextRes"> ${percentE}% positive </div>
+				<div class="overlayTextRes"> ${percentE.toFixed(2)}% positive </div>
 				<div class="scoreBar">
 					<div class="scoreFill" id="scoreFill${index}" style="width: ${(scoreE/5)*100}%"></div>
 				</div>`;
