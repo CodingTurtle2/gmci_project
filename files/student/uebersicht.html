@@ -210,6 +210,9 @@ async function startSurvey() {
 	console.log(code);
 	var course = await couchDB.get("course:" + code);
 	if (course != undefined) {
+		const voted = course.voted_user ??= [];
+		if (voted.includes(userData.name)) return;
+		
 		const users = await couchDB.get("users");
 		users[userData.name].courses ??= [];
 		if (!users[userData.name].courses.includes(code)) {
@@ -222,13 +225,22 @@ async function startSurvey() {
 	}
 }
 
+async function bttnStartSurvey(code) {
+	var course = await couchDB.get("course:" + code);
+	const voted = course.voted_user ??= [];
+	if (voted.includes(userData.name)) return;
+	location.href = "./umfrage.html?course=" + code;
+}
+
 async function setCourseView() {
 	const courseList = document.getElementById("courses-list");
 	courseList.innerHTML = "";
 
 	for (const courseId of userData.courses) {
 		const course = await couchDB.get("course:" + courseId);
-
+		
+		const hasVoted = (course.voted_user ??= []).includes(userData.name);
+		
 		const expire_date = new Date(course.expire_date);
 		const isExpired = expire_date < new Date();
 		
@@ -247,8 +259,8 @@ async function setCourseView() {
 	${course.description}
 </div>
 
-${isExpired ? '': `
-<button class="action start" onclick='location.href = "./umfrage.html?course=${courseId.trim()}";'>
+${isExpired || hasVoted ? '': `
+<button class="action start" onclick='bttnStartSurvey("${courseId.trim()}");'>
 	Umfrage Starten
 </button>`
 }

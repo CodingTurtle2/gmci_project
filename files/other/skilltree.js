@@ -87,7 +87,7 @@ function _getRect(parent, data) {
 		const allowBuy = aSkillPoints > 0 && isParentEnabled;
 		
 		div.innerHTML += `
-<button onclick='_buySkill(${JSON.stringify(data)})' style="${allowBuy ? bttnStyle: bttnStyleDisabled}" ${allowBuy ? "": "disabled"}>Kaufen</button>
+<button onclick='_buySkill(${JSON.stringify(data)})' style="${allowBuy ? bttnStyle: bttnStyleDisabled}" ${allowBuy ? "": "disabled"}>Kaufen (1 Skillpoint)</button>
 		`;
 	}
 	

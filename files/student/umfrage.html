@@ -152,12 +152,18 @@ async function setCourse() {
 	
 	return true;
 }
-async function updateCourseAnswer(answer) {
+async function updateCourseAnswer(answer, done = false) {
 	const args = getURLArgsMap();
 	const coursename = args.course;
 	if (!coursename) return null;
 	const kurs = await couchDB.get("course:" + coursename);
 	if (!kurs) return null;
+	
+	if (done) {
+		const voted = kurs.voted_user ??= [];
+		if (!voted.includes(userData.name)) voted.push(userData.name);
+	}
+	
 	kurs.result.push(answer);
 	await couchDB.set("course:" + coursename, kurs);
 	return kurs;
@@ -275,7 +281,7 @@ function updateContent(old_page, page) {
 }
 
 async function onFinishEva() {
-	await updateCourseAnswer(finalResult);
+	await updateCourseAnswer(finalResult, true);
 	if (await levelUpXP(couchDB)) {
 		const e = getId("level_up");
 		if (e) e.style.display = "unset";
