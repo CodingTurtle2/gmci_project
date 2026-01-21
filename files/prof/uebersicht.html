@@ -8,10 +8,6 @@
 <script src="../lib/basic.js"></script>
 <script src="../other/skills.js"></script>
 <script src="../other/skilltree.js"></script>
-<script>
-const couchDB = new CouchDB();
-setUserData(couchDB);
-</script>
 <title>Übersicht</title>
 </head>
 <body>
@@ -277,6 +273,8 @@ button.auswertung:hover {
 </style>
 
 <script>
+const couchDB = new CouchDB();
+
 (async () => {
 	await setUserData(couchDB);
 	await setCourseView();
@@ -285,7 +283,7 @@ button.auswertung:hover {
 async function setCourseView() {
 	const courseList = document.getElementById("course-list");
 	courseList.innerHTML = "";
-	
+		
 	for(const courseId of userData.courses) {
 		const course = await couchDB.get("course:" + courseId);
 
